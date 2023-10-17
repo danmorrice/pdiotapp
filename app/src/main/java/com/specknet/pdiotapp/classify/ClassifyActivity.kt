@@ -10,7 +10,6 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import com.specknet.pdiotapp.R
@@ -18,9 +17,6 @@ import com.specknet.pdiotapp.utils.Constants
 import com.specknet.pdiotapp.utils.RESpeckLiveData
 
 class ClassifyActivity: AppCompatActivity() {
-
-    private var isTextVisible = true
-    var time = 0f
 
     lateinit var respeckLiveUpdateReceiver: BroadcastReceiver
     lateinit var looperRespeck: Looper
@@ -35,12 +31,7 @@ class ClassifyActivity: AppCompatActivity() {
         val textView: TextView = findViewById(R.id.displayText)
         val button: Button = findViewById(R.id.button)
 
-        val someArray = arrayOf(1,2,3)
-        val arraySize = someArray.size
-
-        textView.text = "Array size: $arraySize"
-
-
+        setupDataList()
 
         // set up the broadcast receiver
         respeckLiveUpdateReceiver = object : BroadcastReceiver() {
@@ -81,11 +72,21 @@ class ClassifyActivity: AppCompatActivity() {
         this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
     }
 
+    private fun setupDataList() {
+        lastThreeSecondsData = ArrayList<Array<Float>>()
+    }
+
     fun updateData(dataPoint: Array<Float>) {
         if (lastThreeSecondsData.size == 75) {
             // TODO: Send the post request in here
             lastThreeSecondsData.clear()
         }
         lastThreeSecondsData.add(dataPoint)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(respeckLiveUpdateReceiver)
+        looperRespeck.quit()
     }
 }

@@ -40,6 +40,7 @@ class LiveDataActivity : AppCompatActivity() {
 
     val filterTestRespeck = IntentFilter(Constants.ACTION_RESPECK_LIVE_BROADCAST)
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_data)
@@ -67,7 +68,6 @@ class LiveDataActivity : AppCompatActivity() {
 
                     time += 1
                     updateGraph(x, y, z)
-
                 }
             }
         }
@@ -127,6 +127,7 @@ class LiveDataActivity : AppCompatActivity() {
         respeckChart.invalidate()
     }
 
+
     fun updateGraph(x: Float, y: Float, z: Float) {
         // take the first element from the queue
         // and update the graph with it
@@ -143,7 +144,6 @@ class LiveDataActivity : AppCompatActivity() {
         }
 
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
