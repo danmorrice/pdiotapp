@@ -13,13 +13,13 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import com.specknet.pdiotapp.R
+import com.specknet.pdiotapp.ml.TestModel
 import com.specknet.pdiotapp.utils.Constants
-import com.specknet.pdiotapp.utils.PostRequestSender
 import com.specknet.pdiotapp.utils.RESpeckLiveData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.io.IOException
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 class ClassifyActivity: AppCompatActivity() {
 
@@ -33,12 +33,12 @@ class ClassifyActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_classify)
 
-        val textView: TextView = findViewById(R.id.displayText)
-        val button: Button = findViewById(R.id.button)
+//        val result: TextView = findViewById(R.id.displayText)
+//        val button: Button = findViewById(R.id.button)
 
-        button.setOnClickListener {
-            textView.text = "Something else"
-        }
+//        button.setOnClickListener {
+//            textView.text = "Something else"
+//        }
 
         setupDataList()
 
@@ -87,33 +87,100 @@ class ClassifyActivity: AppCompatActivity() {
 
     fun updateData(dataPoint: Array<Float>) {
         if (lastThreeSecondsData.size == 75) {
-//            val sender: PostRequestSender = PostRequestSender(lastThreeSecondsData)
-//            val classification = sender.makeRequest()
+            classifyActivity(lastThreeSecondsData)
             lastThreeSecondsData.clear()
-//            val textView: TextView = findViewById(R.id.displayText)
-//            textView.text = "Classification: $classification"
-//            makeRequest()
         }
         lastThreeSecondsData.add(dataPoint)
     }
 
-    fun makeRequest() {
-        val sender = PostRequestSender(lastThreeSecondsData)
+    fun classifyActivity(data: ArrayList<Array<Float>>) {
+        try {
+            val context = this
+            val model = TestModel.newInstance(context)
 
-        // Perform network request in a background thread
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val classification = sender.performNetworkRequest()
+            // Creates inputs for reference.
+            val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 75, 6), DataType.FLOAT32)
+            val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*75*6)
+            byteBuffer.order(ByteOrder.nativeOrder())
 
-                // Update UI on the main thread
-                runOnUiThread {
-                    val textView: TextView = findViewById(R.id.displayText)
-                    textView.text = "Classification: $classification"
+            for (array in data) {
+                for (value in array) {
+                    byteBuffer.putFloat(value)
                 }
-            } catch (e: IOException) {
-                // Handle network-related errors here
-                e.printStackTrace()
             }
+
+            inputFeature0.loadBuffer(byteBuffer)
+
+            // Runs model inference and gets result.
+            val outputs = model.process(inputFeature0)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            val confidences = outputFeature0.floatArray // could be .getFloatArray() instead
+
+            var maxPosition = 0
+            var maxConfidence: Float = 0F
+
+            for (i in confidences.indices) {
+                if (confidences[i] > maxConfidence) {
+                    maxConfidence = confidences[i]
+                    maxPosition = i
+                }
+            }
+
+            val CLASSES = arrayOf(
+                "misc_movements&normal_breathing",
+                "sitting&singing",
+                "standing&talking",
+                "sitting&normal_breathing",
+                "standing&laughing",
+                "lying_down_back&talking",
+                "standing&normal_breathing",
+                "lying_down_back&coughing",
+                "standing&singing",
+                "shuffle_walking&normal_breathing",
+                "descending_stairs&normal_breathing",
+                "sitting&eating",
+                "standing&coughing",
+                "lying_down_stomach&normal_breathing",
+                "lying_down_stomach&talking",
+                "lying_down_left&hyperventilating",
+                "sitting&hyperventilating",
+                "lying_down_back&singing",
+                "lying_down_right&hyperventilating",
+                "walking&normal_breathing",
+                "sitting&coughing",
+                "sitting&talking",
+                "lying_down_right&coughing",
+                "lying_down_stomach&hyperventilating",
+                "lying_down_left&normal_breathing",
+                "standing&hyperventilating",
+                "lying_down_stomach&laughing",
+                "lying_down_left&coughing",
+                "standing&eating",
+                "running&normal_breathing",
+                "lying_down_stomach&singing",
+                "lying_down_back&hyperventilating",
+                "lying_down_back&normal_breathing",
+                "lying_down_right&normal_breathing",
+                "lying_down_left&laughing",
+                "lying_down_left&talking",
+                "ascending_stairs&normal_breathing",
+                "lying_down_right&laughing",
+                "lying_down_right&singing",
+                "lying_down_right&talking",
+                "lying_down_back&laughing",
+                "sitting&laughing",
+                "lying_down_stomach&coughing",
+                "lying_down_left&singing"
+            )
+
+            val result: TextView = findViewById(R.id.displayText)
+            result.text = CLASSES[maxPosition]
+
+            // Releases model resources if no longer used.
+            model.close()
+        } catch (e: Exception) {
+            Log.e("Classifier Error", "An error occurred: ${e.message}")
         }
     }
 
