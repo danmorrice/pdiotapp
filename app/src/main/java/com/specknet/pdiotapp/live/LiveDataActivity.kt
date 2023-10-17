@@ -32,7 +32,6 @@ class LiveDataActivity : AppCompatActivity() {
     var time = 0f
     lateinit var allRespeckData: LineData
 
-
     lateinit var respeckChart: LineChart
 
     // global broadcast receiver so we can unregister it
@@ -67,7 +66,7 @@ class LiveDataActivity : AppCompatActivity() {
                     val z = liveData.accelZ
 
                     time += 1
-                    updateGraph("respeck", x, y, z)
+                    updateGraph(x, y, z)
 
                 }
             }
@@ -79,7 +78,6 @@ class LiveDataActivity : AppCompatActivity() {
         looperRespeck = handlerThreadRespeck.looper
         val handlerRespeck = Handler(looperRespeck)
         this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
-
     }
 
 
@@ -87,7 +85,6 @@ class LiveDataActivity : AppCompatActivity() {
         respeckChart = findViewById(R.id.respeck_chart)
 
         // Respeck
-
         time = 0f
         val entries_res_accel_x = ArrayList<Entry>()
         val entries_res_accel_y = ArrayList<Entry>()
@@ -130,21 +127,19 @@ class LiveDataActivity : AppCompatActivity() {
         respeckChart.invalidate()
     }
 
-    fun updateGraph(graph: String, x: Float, y: Float, z: Float) {
+    fun updateGraph(x: Float, y: Float, z: Float) {
         // take the first element from the queue
         // and update the graph with it
-        if (graph == "respeck") {
-            dataSet_res_accel_x.addEntry(Entry(time, x))
-            dataSet_res_accel_y.addEntry(Entry(time, y))
-            dataSet_res_accel_z.addEntry(Entry(time, z))
+        dataSet_res_accel_x.addEntry(Entry(time, x))
+        dataSet_res_accel_y.addEntry(Entry(time, y))
+        dataSet_res_accel_z.addEntry(Entry(time, z))
 
-            runOnUiThread {
-                allRespeckData.notifyDataChanged()
-                respeckChart.notifyDataSetChanged()
-                respeckChart.invalidate()
-                respeckChart.setVisibleXRangeMaximum(150f)
-                respeckChart.moveViewToX(respeckChart.lowestVisibleX + 40)
-            }
+        runOnUiThread {
+            allRespeckData.notifyDataChanged()
+            respeckChart.notifyDataSetChanged()
+            respeckChart.invalidate()
+            respeckChart.setVisibleXRangeMaximum(150f)
+            respeckChart.moveViewToX(respeckChart.lowestVisibleX + 40)
         }
 
     }
