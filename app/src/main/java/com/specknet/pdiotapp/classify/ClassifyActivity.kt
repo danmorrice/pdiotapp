@@ -14,7 +14,12 @@ import android.widget.Button
 import android.widget.TextView
 import com.specknet.pdiotapp.R
 import com.specknet.pdiotapp.utils.Constants
+import com.specknet.pdiotapp.utils.PostRequestSender
 import com.specknet.pdiotapp.utils.RESpeckLiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.IOException
 
 class ClassifyActivity: AppCompatActivity() {
 
@@ -30,6 +35,10 @@ class ClassifyActivity: AppCompatActivity() {
 
         val textView: TextView = findViewById(R.id.displayText)
         val button: Button = findViewById(R.id.button)
+
+        button.setOnClickListener {
+            textView.text = "Something else"
+        }
 
         setupDataList()
 
@@ -78,10 +87,34 @@ class ClassifyActivity: AppCompatActivity() {
 
     fun updateData(dataPoint: Array<Float>) {
         if (lastThreeSecondsData.size == 75) {
-            // TODO: Send the post request in here
+//            val sender: PostRequestSender = PostRequestSender(lastThreeSecondsData)
+//            val classification = sender.makeRequest()
             lastThreeSecondsData.clear()
+//            val textView: TextView = findViewById(R.id.displayText)
+//            textView.text = "Classification: $classification"
+//            makeRequest()
         }
         lastThreeSecondsData.add(dataPoint)
+    }
+
+    fun makeRequest() {
+        val sender = PostRequestSender(lastThreeSecondsData)
+
+        // Perform network request in a background thread
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val classification = sender.performNetworkRequest()
+
+                // Update UI on the main thread
+                runOnUiThread {
+                    val textView: TextView = findViewById(R.id.displayText)
+                    textView.text = "Classification: $classification"
+                }
+            } catch (e: IOException) {
+                // Handle network-related errors here
+                e.printStackTrace()
+            }
+        }
     }
 
     override fun onDestroy() {

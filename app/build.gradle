@@ -62,8 +62,4 @@ dependencies {
     //for json
     implementation 'com.google.code.gson:gson:2.8.9'
 
-    //for post requests
-    implementation 'org.apache.httpcomponents:httpclient-android:4.3.5'
-    implementation 'org.apache.httpcomponents:httpmime:4.5.6'
-
 }
