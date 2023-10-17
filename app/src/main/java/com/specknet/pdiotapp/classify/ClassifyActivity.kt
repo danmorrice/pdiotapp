@@ -174,8 +174,10 @@ class ClassifyActivity: AppCompatActivity() {
                 "lying_down_left&singing"
             )
 
-            val result: TextView = findViewById(R.id.displayText)
-            result.text = CLASSES[maxPosition]
+            runOnUiThread {
+                val result: TextView = findViewById(R.id.displayText)
+                result.text = CLASSES[maxPosition]
+            }
 
             // Releases model resources if no longer used.
             model.close()
