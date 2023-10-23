@@ -12,7 +12,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.TextView
 import com.specknet.pdiotapp.R
-import com.specknet.pdiotapp.ml.MyModel
+import com.specknet.pdiotapp.ml.Cnn2
 import com.specknet.pdiotapp.utils.Constants
 import com.specknet.pdiotapp.utils.RESpeckLiveData
 import org.tensorflow.lite.DataType
@@ -95,7 +95,7 @@ class ClassifyActivity: AppCompatActivity() {
     fun classifyActivity(data: ArrayList<Array<Float>>) {
         try {
             val context = this
-            val model = MyModel.newInstance(context)
+            val model = Cnn2.newInstance(context)
 
             // Creates inputs for reference.
             val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 75, 6), DataType.FLOAT32)
