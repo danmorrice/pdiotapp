@@ -32,12 +32,9 @@ class ClassifyActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_classify)
 
-//        val result: TextView = findViewById(R.id.displayText)
-//        val button: Button = findViewById(R.id.button)
+        val result: TextView = findViewById(R.id.displayText)
 
-//        button.setOnClickListener {
-//            textView.text = "Something else"
-//        }
+//        result.setText("Is this working")
 
         setupDataList()
 
@@ -173,10 +170,12 @@ class ClassifyActivity: AppCompatActivity() {
                 "lying_down_left&singing"
             )
 
-            runOnUiThread {
-                val result: TextView = findViewById(R.id.displayText)
-                result.text = CLASSES[maxPosition]
-            }
+//            runOnUiThread {
+//                val result: TextView = findViewById(R.id.displayText)
+//                result.setText("working")   //CLASSES[maxPosition]
+//            }
+            val result: TextView = findViewById(R.id.displayText)
+            result.setText(CLASSES[maxPosition])   //CLASSES[maxPosition]
 
             // Releases model resources if no longer used.
             model.close()

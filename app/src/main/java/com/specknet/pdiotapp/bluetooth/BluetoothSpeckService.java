@@ -302,7 +302,7 @@ public class BluetoothSpeckService extends Service {
 //            Log.i(TAG,
 //                    "FOUND :" + rxBleScanResult.getBleDevice().getName() + ", " + rxBleScanResult.getBleDevice().getMacAddress());
 
-            if ((mIsRESpeckFound || !mIsRESpeckEnabled) && (mIsThingyFound || !mIsThingyEnabled)) {
+            if ((mIsRESpeckFound || !mIsRESpeckEnabled)) {
                 scanSubscription.unsubscribe();
             }
 
@@ -335,16 +335,16 @@ public class BluetoothSpeckService extends Service {
                 }
             }
 
-            if (mIsThingyEnabled && !mIsThingyFound) {
-
-                if (rxBleScanResult.getBleDevice().getMacAddress().equalsIgnoreCase(THINGY_UUID)) {
-                    THINGY_BLE_ADDRESS = THINGY_UUID;
-                    mIsThingyFound = true;
-                    Log.i(TAG, "Connecting after scanning");
-                    BluetoothSpeckService.this.connectToThingy();
-                }
-
-            }
+//            if (mIsThingyEnabled && !mIsThingyFound) {
+//
+//                if (rxBleScanResult.getBleDevice().getMacAddress().equalsIgnoreCase(THINGY_UUID)) {
+//                    THINGY_BLE_ADDRESS = THINGY_UUID;
+//                    mIsThingyFound = true;
+//                    Log.i(TAG, "Connecting after scanning");
+//                    BluetoothSpeckService.this.connectToThingy();
+//                }
+//
+//            }
 
         }, throwable -> {
             // Handle an error here.

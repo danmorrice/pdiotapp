@@ -32,7 +32,7 @@
         android:id="@+id/displayText"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:text="CLASSIFICATION: Lying down on your right and breathing x"
+        android:text="No classification yet"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
