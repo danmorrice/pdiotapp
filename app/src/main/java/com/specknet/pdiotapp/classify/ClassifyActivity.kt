@@ -10,10 +10,9 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
-import android.widget.Button
 import android.widget.TextView
 import com.specknet.pdiotapp.R
-import com.specknet.pdiotapp.ml.TestModel
+import com.specknet.pdiotapp.ml.MyModel
 import com.specknet.pdiotapp.utils.Constants
 import com.specknet.pdiotapp.utils.RESpeckLiveData
 import org.tensorflow.lite.DataType
@@ -46,7 +45,7 @@ class ClassifyActivity: AppCompatActivity() {
         respeckLiveUpdateReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
 
-                Log.i("thread", "I am running on thread = " + Thread.currentThread().name)
+                Log.i("Classify activity", "Running on thread: " + Thread.currentThread().name)
 
                 val action = intent.action
 
@@ -96,7 +95,7 @@ class ClassifyActivity: AppCompatActivity() {
     fun classifyActivity(data: ArrayList<Array<Float>>) {
         try {
             val context = this
-            val model = TestModel.newInstance(context)
+            val model = MyModel.newInstance(context)
 
             // Creates inputs for reference.
             val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 75, 6), DataType.FLOAT32)
@@ -118,7 +117,7 @@ class ClassifyActivity: AppCompatActivity() {
             val confidences = outputFeature0.floatArray // could be .getFloatArray() instead
 
             var maxPosition = 0
-            var maxConfidence: Float = 0F
+            var maxConfidence = 0F
 
             for (i in confidences.indices) {
                 if (confidences[i] > maxConfidence) {
@@ -182,7 +181,7 @@ class ClassifyActivity: AppCompatActivity() {
             // Releases model resources if no longer used.
             model.close()
         } catch (e: Exception) {
-            Log.e("Classifier Error", "An error occurred: ${e.message}")
+            Log.e("CLASSIFIER", "An error occurred: ${e.message}")
         }
     }
 
