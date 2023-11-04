@@ -14,6 +14,7 @@ import android.view.MenuItem
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.specknet.pdiotapp.bluetooth.BluetoothSpeckService
 import com.specknet.pdiotapp.bluetooth.ConnectingActivity
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity() {
 
     var isUserFirstTime = false
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -61,6 +63,41 @@ class MainActivity : AppCompatActivity() {
             sharedPreferences.edit().putBoolean(Constants.PREF_USER_FIRST_TIME, false).apply()
             val introIntent = Intent(this, OnBoardingActivity::class.java)
             startActivity(introIntent)
+        }
+
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigator)
+        bottomNavigationView.selectedItemId = R.id.home_page
+        //bottomNavigationView.menu.findItem(R.id.home_page).isChecked = true
+
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.home_page -> {
+                    //val intent = Intent(this, MainActivity::class.java)
+                    //startActivity(intent)
+                    true
+                }
+
+                R.id.live_data_page -> {
+                    val intent = Intent(this, LiveDataActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.classify_page -> {
+                    val intent = Intent(this, ClassifyActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.setup_page -> {
+                    val intent = Intent(this, ConnectingActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                else -> false
+            }
         }
 
         liveProcessingButton = findViewById(R.id.live_button)

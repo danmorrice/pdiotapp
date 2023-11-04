@@ -26,22 +26,10 @@
 
 
         <Button
-            android:id="@+id/live_button"
-            android:layout_width="169dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="52dp"
-            android:background="#03A9F4"
-            android:text="Watch live processing"
-            android:textColor="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@+id/ble_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
             android:id="@+id/ble_button"
             android:layout_width="550px"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="80dp"
+            android:layout_marginBottom="180dp"
             android:background="#03A9F4"
             android:text="Connect sensors"
             android:textColor="#FFFFFF"
@@ -60,11 +48,47 @@
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/live_button"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.47"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textView2"
-            app:layout_constraintVertical_bias="0.927" />
+            app:layout_constraintVertical_bias="0.0" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <Button
+        android:id="@+id/live_button"
+        android:layout_width="169dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="204dp"
+        android:background="#03A9F4"
+        android:text="Watch live processing"
+        android:textColor="#FFFFFF"
+        app:layout_anchor="@+id/constraintLayout"
+        app:layout_anchorGravity="center" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/colorPrimary"
+        app:layout_anchor="@+id/bottom_navigator"
+        app:layout_anchorGravity="top" />
+
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigator"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@android:color/white"
+        app:labelVisibilityMode="labeled"
+        app:itemTextColor="@drawable/selector"
+        app:itemIconTint="@drawable/selector"
+        app:itemBackground="@drawable/item_bottom_nav"
+        app:menu="@menu/nav_menu"
+        tools:ignore="MissingConstraints" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+

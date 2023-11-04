@@ -10,8 +10,12 @@
         android:id="@+id/respeck_graphs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="126dp"
         android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/respeck_chart"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -20,12 +24,44 @@
             android:layout_height="wrap_content"
             android:text="Respeck Live Data" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/respeck_chart"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
-
     </LinearLayout>
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigator"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@android:color/black"
+        app:itemBackground="@drawable/item_bottom_nav"
+        app:itemIconTint="@drawable/selector"
+        app:itemTextColor="@drawable/selector"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.5dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigator"
+        />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/respeck_chart"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="304dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/respeck_graphs" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
