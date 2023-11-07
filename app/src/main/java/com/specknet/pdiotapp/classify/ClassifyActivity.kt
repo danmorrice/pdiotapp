@@ -46,14 +46,14 @@ class ClassifyActivity: AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigator)
         bottomNavigationView.selectedItemId = R.id.classify_page
 
-        setupDataLists()
+        setupDataStreams()
 
         val gyroSwitch: Switch = findViewById(R.id.gyroSwitch)
         val gyroSwitchText: TextView = findViewById(R.id.gyroSwitchText)
 
 
         gyroSwitch.setOnCheckedChangeListener { _, isChecked ->
-            somethingForNow(isChecked)
+            streamDataToModel(isChecked)
             if (isChecked) {
                 gyroSwitchText.setText("ON")
             } else {
@@ -100,8 +100,12 @@ class ClassifyActivity: AppCompatActivity() {
         this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
     }
 
+    private fun setupDataStreams() {
+        nonGyroDataStream = ArrayList()
+        gyroDataStream = ArrayList()
+    }
 
-    private fun somethingForNow(isGyroOn: Boolean) {
+    private fun streamDataToModel(isGyroOn: Boolean) {
         // set up the broadcast receiver
         respeckLiveUpdateReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -112,26 +116,28 @@ class ClassifyActivity: AppCompatActivity() {
 
                 if (action == Constants.ACTION_RESPECK_LIVE_BROADCAST) {
 
-                    val liveData =
-                        intent.getSerializableExtra(Constants.RESPECK_LIVE_DATA) as RESpeckLiveData
+                    val liveData = intent.getSerializableExtra(Constants.RESPECK_LIVE_DATA) as RESpeckLiveData
                     Log.d("Live", "onReceive: liveData = " + liveData)
-
 
                     // Get acceleration data
                     val accelX = liveData.accelX
                     val accelY = liveData.accelY
                     val accelZ = liveData.accelZ
 
+                    val dataPoint: Array<Float>
+
                     if (!isGyroOn) {
+                        // If we switch to non gyro data, clear the gyro stream so it is empty when
+                        // we return to it
                         gyroDataStream.clear()
                         gyroDataPointCounter = 0
 
-                        val dataPoint = arrayOf(accelX, accelY, accelZ)
-                        updateNonGyroData(dataPoint)
+                        dataPoint = arrayOf(accelX, accelY, accelZ)
                     } else {
+                        // If we switch to gyro data, clear the non gyro stream so it is empty when
+                        // we return to it
                         nonGyroDataStream.clear()
                         nonGyroDataPointCounter = 0
-                        // TODO: Implement the model with gyroscope data
 
                         // Get gyroscope data
                         val gyroscopeReading = liveData.gyro
@@ -139,51 +145,48 @@ class ClassifyActivity: AppCompatActivity() {
                         val gyroY = gyroscopeReading.y
                         val gyroZ = gyroscopeReading.z
 
-                        val dataPoint = arrayOf(accelX, accelY, accelZ, gyroX, gyroY, gyroZ)
-                        //updateGyroData(dataPoint)
+                        dataPoint = arrayOf(accelX, accelY, accelZ, gyroX, gyroY, gyroZ)
                     }
+                    updateData(dataPoint, false)
                 }
             }
         }
     }
 
 
-    private fun setupDataLists() {
-        nonGyroDataStream = ArrayList()
-        gyroDataStream = ArrayList()
-    }
+    fun updateData(dataPoint: Array<Float>, isGyroOn: Boolean) {
+        val dataStream: ArrayList<Array<Float>>
+        if (isGyroOn) {
+            dataStream = gyroDataStream
+        } else {
+            dataStream = nonGyroDataStream
+        }
 
-    fun updateNonGyroData(dataPoint: Array<Float>) {
         // Add the new data point to the end of the ArrayList
-        nonGyroDataStream.add(dataPoint)
-        nonGyroDataPointCounter++
+        dataStream.add(dataPoint)
+
         // If the ArrayList is full, remove the first element
-        if (nonGyroDataStream.size == 25*noOfSecondsForModel) {
-            nonGyroDataStream.removeAt(0)
+        if (dataStream.size == 25*noOfSecondsForModel) {
+            dataStream.removeAt(0)
         }
+
         // Classify activity after every 12 data points are read in (~0.5 seconds)
-        if (nonGyroDataPointCounter == 12) {
-            classifyNonGyroActivity(nonGyroDataStream)
-            nonGyroDataPointCounter = 0
+        if (isGyroOn) {
+            gyroDataPointCounter++
+            if (gyroDataPointCounter == 12) {
+                classifyNonGyroActivity(dataStream)
+                gyroDataPointCounter = 0
+            }
+        } else {
+            nonGyroDataPointCounter++
+            if (nonGyroDataPointCounter == 12) {
+                classifyNonGyroActivity(dataStream)
+                nonGyroDataPointCounter = 0
+            }
         }
     }
 
-    fun updateGyroData(dataPoint: Array<Float>) {
-        // Add the new data point to the end of the ArrayList
-        nonGyroDataStream.add(dataPoint)
-        nonGyroDataPointCounter++
-        // If the ArrayList is full, remove the first element
-        if (nonGyroDataStream.size == 25*noOfSecondsForModel) {
-            nonGyroDataStream.removeAt(0)
-        }
-        // Classify activity after every 12 data points are read in (~0.5 seconds)
-        if (nonGyroDataPointCounter == 12) {
-            classifyGyroActivity(nonGyroDataStream)
-            nonGyroDataPointCounter = 0
-        }
-    }
-
-    fun classifyNonGyroActivity(data: ArrayList<Array<Float>>) {
+    private fun classifyNonGyroActivity(data: ArrayList<Array<Float>>) {
         try {
             val context = this
             val model = Cnn2.newInstance(context)
@@ -205,7 +208,7 @@ class ClassifyActivity: AppCompatActivity() {
             val outputs = model.process(inputFeature0)
             val outputFeature0 = outputs.outputFeature0AsTensorBuffer
 
-            val confidences = outputFeature0.floatArray // could be .getFloatArray() instead
+            val confidences = outputFeature0.floatArray
 
             var maxPosition = 0
             var maxConfidence = 0F
@@ -274,7 +277,7 @@ class ClassifyActivity: AppCompatActivity() {
         }
     }
 
-    fun classifyGyroActivity(data: ArrayList<Array<Float>>) {
+    private fun classifyGyroActivity(data: ArrayList<Array<Float>>) {
         try {
             val context = this
             val model = Cnn2.newInstance(context)
