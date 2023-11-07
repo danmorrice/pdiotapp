@@ -51,13 +51,14 @@ class ClassifyActivity: AppCompatActivity() {
         val gyroSwitch: Switch = findViewById(R.id.gyroSwitch)
         val gyroSwitchText: TextView = findViewById(R.id.gyroSwitchText)
 
+        streamDataToModel(false)
 
         gyroSwitch.setOnCheckedChangeListener { _, isChecked ->
             streamDataToModel(isChecked)
             if (isChecked) {
-                gyroSwitchText.setText("ON")
+                gyroSwitchText.setText("Using gyroscope readings")
             } else {
-                gyroSwitchText.setText("OFF")
+                gyroSwitchText.setText("Not using gyroscope readings")
             }
         }
 
