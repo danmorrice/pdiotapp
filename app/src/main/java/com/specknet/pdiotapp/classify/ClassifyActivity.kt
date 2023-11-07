@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
+import android.widget.Switch
 import android.widget.TextView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.specknet.pdiotapp.MainActivity
@@ -26,11 +27,17 @@ import java.nio.ByteOrder
 
 class ClassifyActivity: AppCompatActivity() {
 
-    lateinit var respeckLiveUpdateReceiver: BroadcastReceiver
-    lateinit var looperRespeck: Looper
-    val filterTestRespeck = IntentFilter(Constants.ACTION_RESPECK_LIVE_BROADCAST)
+    private lateinit var respeckLiveUpdateReceiver: BroadcastReceiver
+    private lateinit var looperRespeck: Looper
+    private val filterTestRespeck = IntentFilter(Constants.ACTION_RESPECK_LIVE_BROADCAST)
 
-    lateinit var lastThreeSecondsData: ArrayList<Array<Float>>
+    private lateinit var nonGyroDataStream: ArrayList<Array<Float>>
+    private lateinit var gyroDataStream: ArrayList<Array<Float>>
+
+    private var nonGyroDataPointCounter = 0
+    private var gyroDataPointCounter = 0
+
+    private var noOfSecondsForModel = 4
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +45,22 @@ class ClassifyActivity: AppCompatActivity() {
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigator)
         bottomNavigationView.selectedItemId = R.id.classify_page
+
+        setupDataLists()
+
+        val gyroSwitch: Switch = findViewById(R.id.gyroSwitch)
+        val gyroSwitchText: TextView = findViewById(R.id.gyroSwitchText)
+
+
+        gyroSwitch.setOnCheckedChangeListener { _, isChecked ->
+            somethingForNow(isChecked)
+            if (isChecked) {
+                gyroSwitchText.setText("ON")
+            } else {
+                gyroSwitchText.setText("OFF")
+            }
+        }
+
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -69,12 +92,16 @@ class ClassifyActivity: AppCompatActivity() {
             }
         }
 
-        val result: TextView = findViewById(R.id.displayText)
+        // register receiver on another thread
+        val handlerThreadRespeck = HandlerThread("bgThreadRespeckLive")
+        handlerThreadRespeck.start()
+        looperRespeck = handlerThreadRespeck.looper
+        val handlerRespeck = Handler(looperRespeck)
+        this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
+    }
 
-//        result.setText("Is this working")
 
-        setupDataList()
-
+    private fun somethingForNow(isGyroOn: Boolean) {
         // set up the broadcast receiver
         respeckLiveUpdateReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -89,51 +116,81 @@ class ClassifyActivity: AppCompatActivity() {
                         intent.getSerializableExtra(Constants.RESPECK_LIVE_DATA) as RESpeckLiveData
                     Log.d("Live", "onReceive: liveData = " + liveData)
 
+
                     // Get acceleration data
                     val accelX = liveData.accelX
                     val accelY = liveData.accelY
                     val accelZ = liveData.accelZ
 
-                    // Get gyroscope data
-                    val gyroscopeReading = liveData.gyro
-                    val gyroX = gyroscopeReading.x
-                    val gyroY = gyroscopeReading.y
-                    val gyroZ = gyroscopeReading.z
+                    if (!isGyroOn) {
+                        gyroDataStream.clear()
+                        gyroDataPointCounter = 0
 
-                    val dataPoint = arrayOf(accelX, accelY, accelZ, gyroX, gyroY, gyroZ)
-                    updateData(dataPoint)
+                        val dataPoint = arrayOf(accelX, accelY, accelZ)
+                        updateNonGyroData(dataPoint)
+                    } else {
+                        nonGyroDataStream.clear()
+                        nonGyroDataPointCounter = 0
+                        // TODO: Implement the model with gyroscope data
+
+                        // Get gyroscope data
+                        val gyroscopeReading = liveData.gyro
+                        val gyroX = gyroscopeReading.x
+                        val gyroY = gyroscopeReading.y
+                        val gyroZ = gyroscopeReading.z
+
+                        val dataPoint = arrayOf(accelX, accelY, accelZ, gyroX, gyroY, gyroZ)
+                        //updateGyroData(dataPoint)
+                    }
                 }
             }
         }
-
-        // register receiver on another thread
-        val handlerThreadRespeck = HandlerThread("bgThreadRespeckLive")
-        handlerThreadRespeck.start()
-        looperRespeck = handlerThreadRespeck.looper
-        val handlerRespeck = Handler(looperRespeck)
-        this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
     }
 
-    private fun setupDataList() {
-        lastThreeSecondsData = ArrayList<Array<Float>>()
+
+    private fun setupDataLists() {
+        nonGyroDataStream = ArrayList()
+        gyroDataStream = ArrayList()
     }
 
-    fun updateData(dataPoint: Array<Float>) {
-        if (lastThreeSecondsData.size == 75) {
-            classifyActivity(lastThreeSecondsData)
-            lastThreeSecondsData.clear()
+    fun updateNonGyroData(dataPoint: Array<Float>) {
+        // Add the new data point to the end of the ArrayList
+        nonGyroDataStream.add(dataPoint)
+        nonGyroDataPointCounter++
+        // If the ArrayList is full, remove the first element
+        if (nonGyroDataStream.size == 25*noOfSecondsForModel) {
+            nonGyroDataStream.removeAt(0)
         }
-        lastThreeSecondsData.add(dataPoint)
+        // Classify activity after every 12 data points are read in (~0.5 seconds)
+        if (nonGyroDataPointCounter == 12) {
+            classifyNonGyroActivity(nonGyroDataStream)
+            nonGyroDataPointCounter = 0
+        }
     }
 
-    fun classifyActivity(data: ArrayList<Array<Float>>) {
+    fun updateGyroData(dataPoint: Array<Float>) {
+        // Add the new data point to the end of the ArrayList
+        nonGyroDataStream.add(dataPoint)
+        nonGyroDataPointCounter++
+        // If the ArrayList is full, remove the first element
+        if (nonGyroDataStream.size == 25*noOfSecondsForModel) {
+            nonGyroDataStream.removeAt(0)
+        }
+        // Classify activity after every 12 data points are read in (~0.5 seconds)
+        if (nonGyroDataPointCounter == 12) {
+            classifyGyroActivity(nonGyroDataStream)
+            nonGyroDataPointCounter = 0
+        }
+    }
+
+    fun classifyNonGyroActivity(data: ArrayList<Array<Float>>) {
         try {
             val context = this
             val model = Cnn2.newInstance(context)
 
             // Creates inputs for reference.
-            val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 75, 6), DataType.FLOAT32)
-            val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*75*6)
+            val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 4*noOfSecondsForModel, 3), DataType.FLOAT32)
+            val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*4*noOfSecondsForModel*3)
             byteBuffer.order(ByteOrder.nativeOrder())
 
             for (array in data) {
@@ -207,12 +264,99 @@ class ClassifyActivity: AppCompatActivity() {
                 "lying_down_left&singing"
             )
 
-//            runOnUiThread {
-//                val result: TextView = findViewById(R.id.displayText)
-//                result.setText("working")   //CLASSES[maxPosition]
-//            }
-            val result: TextView = findViewById(R.id.displayText)
-            result.setText(CLASSES[maxPosition])   //CLASSES[maxPosition]
+            val result: TextView = findViewById(R.id.classificationText)
+            result.setText(CLASSES[maxPosition])
+
+            // Releases model resources if no longer used.
+            model.close()
+        } catch (e: Exception) {
+            Log.e("CLASSIFIER", "An error occurred: ${e.message}")
+        }
+    }
+
+    fun classifyGyroActivity(data: ArrayList<Array<Float>>) {
+        try {
+            val context = this
+            val model = Cnn2.newInstance(context)
+
+            // Creates inputs for reference.
+            val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 4*noOfSecondsForModel, 6), DataType.FLOAT32)
+            val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*4*noOfSecondsForModel*6)
+            byteBuffer.order(ByteOrder.nativeOrder())
+
+            for (array in data) {
+                for (value in array) {
+                    byteBuffer.putFloat(value)
+                }
+            }
+
+            inputFeature0.loadBuffer(byteBuffer)
+
+            // Runs model inference and gets result.
+            val outputs = model.process(inputFeature0)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            val confidences = outputFeature0.floatArray // could be .getFloatArray() instead
+
+            var maxPosition = 0
+            var maxConfidence = 0F
+
+            for (i in confidences.indices) {
+                if (confidences[i] > maxConfidence) {
+                    maxConfidence = confidences[i]
+                    maxPosition = i
+                }
+            }
+
+            val CLASSES = arrayOf(
+                "misc_movements&normal_breathing",
+                "sitting&singing",
+                "standing&talking",
+                "sitting&normal_breathing",
+                "standing&laughing",
+                "lying_down_back&talking",
+                "standing&normal_breathing",
+                "lying_down_back&coughing",
+                "standing&singing",
+                "shuffle_walking&normal_breathing",
+                "descending_stairs&normal_breathing",
+                "sitting&eating",
+                "standing&coughing",
+                "lying_down_stomach&normal_breathing",
+                "lying_down_stomach&talking",
+                "lying_down_left&hyperventilating",
+                "sitting&hyperventilating",
+                "lying_down_back&singing",
+                "lying_down_right&hyperventilating",
+                "walking&normal_breathing",
+                "sitting&coughing",
+                "sitting&talking",
+                "lying_down_right&coughing",
+                "lying_down_stomach&hyperventilating",
+                "lying_down_left&normal_breathing",
+                "standing&hyperventilating",
+                "lying_down_stomach&laughing",
+                "lying_down_left&coughing",
+                "standing&eating",
+                "running&normal_breathing",
+                "lying_down_stomach&singing",
+                "lying_down_back&hyperventilating",
+                "lying_down_back&normal_breathing",
+                "lying_down_right&normal_breathing",
+                "lying_down_left&laughing",
+                "lying_down_left&talking",
+                "ascending_stairs&normal_breathing",
+                "lying_down_right&laughing",
+                "lying_down_right&singing",
+                "lying_down_right&talking",
+                "lying_down_back&laughing",
+                "sitting&laughing",
+                "lying_down_stomach&coughing",
+                "lying_down_left&singing"
+            )
+
+            val result: TextView = findViewById(R.id.classificationText)
+            result.setText(CLASSES[maxPosition])
 
             // Releases model resources if no longer used.
             model.close()
