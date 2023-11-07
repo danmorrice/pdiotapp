@@ -181,6 +181,7 @@ class LiveDataActivity : AppCompatActivity() {
             respeckChart.invalidate()
             respeckChart.setVisibleXRangeMaximum(150f)
             respeckChart.moveViewToX(respeckChart.lowestVisibleX + 40)
+
         }
 
     }

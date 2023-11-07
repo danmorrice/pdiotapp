@@ -100,13 +100,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Thingy"
-                android:textSize="30dp" />
+                android:textSize="20dp" />
 
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="5dp"
+                android:textSize="10dp"
                 android:text="If your phone supports NFC, tap it against the top of the Thingy to obtain the ID.\nThe Thingy ID is also written on a label under the black rubber case." />
 
 
@@ -161,6 +162,25 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Restart connection" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginBottom="30dp"
+            android:padding="30dp">
+
+            <Button
+                android:id="@+id/sign_out_of_account_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:text="Sign Out of Account"
+                android:textColor="@android:color/white"/>
 
         </LinearLayout>
 

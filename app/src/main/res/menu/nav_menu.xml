@@ -18,7 +18,7 @@
 
     <item
         android:id="@+id/setup_page"
-        android:title="Setup"
+        android:title="Settings"
         android:icon="@drawable/new_setting_icon"/>
 
 </menu>
