@@ -17,13 +17,22 @@ import com.specknet.pdiotapp.MainActivity
 import com.specknet.pdiotapp.R
 import com.specknet.pdiotapp.bluetooth.ConnectingActivity
 import com.specknet.pdiotapp.live.LiveDataActivity
-import com.specknet.pdiotapp.ml.Cnn2
 import com.specknet.pdiotapp.utils.Constants
 import com.specknet.pdiotapp.utils.RESpeckLiveData
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+
+import com.specknet.pdiotapp.ml.StationaryOrMoving
+import com.specknet.pdiotapp.ml.MovingClassifier
+import com.specknet.pdiotapp.ml.StationaryPositionClassifier
+import com.specknet.pdiotapp.ml.LyingDownBackModel
+import com.specknet.pdiotapp.ml.LyingDownStomachModel
+import com.specknet.pdiotapp.ml.LyingDownLeftModel
+import com.specknet.pdiotapp.ml.LyingDownRightModel
+import com.specknet.pdiotapp.ml.SittingStandingModel
+
 
 class ClassifyActivity: AppCompatActivity() {
 
@@ -157,6 +166,8 @@ class ClassifyActivity: AppCompatActivity() {
 
     fun updateData(dataPoint: Array<Float>, isGyroOn: Boolean) {
         val dataStream: ArrayList<Array<Float>>
+        val inputFeatures: TensorBuffer
+
         if (isGyroOn) {
             dataStream = gyroDataStream
         } else {
@@ -175,199 +186,306 @@ class ClassifyActivity: AppCompatActivity() {
         if (isGyroOn) {
             gyroDataPointCounter++
             if (gyroDataPointCounter == 12) {
-                classifyNonGyroActivity(dataStream)
                 gyroDataPointCounter = 0
+                inputFeatures = prepareDataForClassification(dataStream, 6)
+                // TODO: Use input features for gyroscope data
             }
         } else {
             nonGyroDataPointCounter++
             if (nonGyroDataPointCounter == 12) {
-                classifyNonGyroActivity(dataStream)
                 nonGyroDataPointCounter = 0
+                inputFeatures = prepareDataForClassification(dataStream, 3)
+                classifyNonGyroActivity(inputFeatures)
             }
         }
     }
 
-    private fun classifyNonGyroActivity(data: ArrayList<Array<Float>>) {
+    private fun prepareDataForClassification(data: ArrayList<Array<Float>>, dataWidth: Int): TensorBuffer {
+        // Creates inputs for reference.
+        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 4*noOfSecondsForModel, dataWidth), DataType.FLOAT32)
+        val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*4*noOfSecondsForModel*dataWidth)
+        byteBuffer.order(ByteOrder.nativeOrder())
+        for (array in data) {
+            for (value in array) {
+                byteBuffer.putFloat(value)
+            }
+        }
+        inputFeature0.loadBuffer(byteBuffer)
+        return inputFeature0
+    }
+
+    private fun classifyNonGyroActivity(inputFeatures: TensorBuffer) {
         try {
-            val context = this
-            val model = Cnn2.newInstance(context)
+            // TODO: Deal with case binary classifier returns -1 (failure)
+            val binaryClassification = stationaryOrMovingClassifier(inputFeatures)
 
-            // Creates inputs for reference.
-            val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 4*noOfSecondsForModel, 3), DataType.FLOAT32)
-            val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*4*noOfSecondsForModel*3)
-            byteBuffer.order(ByteOrder.nativeOrder())
-
-            for (array in data) {
-                for (value in array) {
-                    byteBuffer.putFloat(value)
-                }
+            if (binaryClassification == 1) {
+                // Prediction is moving
+                movingClassifier(inputFeatures)
+                return
             }
 
-            inputFeature0.loadBuffer(byteBuffer)
+            // Else prediction is moving
+            val stationaryPosition = stationaryPositionClassifier(inputFeatures)
+            if (stationaryPosition == 0) {
+                // Sitting or standing
+                sittingOrStandingClassifier(inputFeatures)
+            } else if (stationaryPosition == 1) {
+                // Lying down on back
+                lyingBackClassifier(inputFeatures)
+            } else if (stationaryPosition == 2) {
+                // Lying down on stomach
+                lyingStomachClassifier(inputFeatures)
+            } else if (stationaryPosition == 3) {
+                // Lying down on right
+                lyingRightClassifier(inputFeatures)
+            } else {
+                // Lying down on left
+                lyingLeftClassifier(inputFeatures)
+            }
+
+        } catch (e: Exception) {
+            Log.e("STATIONARY OR MOVING CLASSIFIER", "An error occurred: ${e.message}")
+        }
+    }
+
+    private fun stationaryOrMovingClassifier(inputFeatures: TensorBuffer): Int {
+        try {
+            val model = StationaryOrMoving.newInstance(this)
 
             // Runs model inference and gets result.
-            val outputs = model.process(inputFeature0)
+            val outputs = model.process(inputFeatures)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+            val confidences = outputFeature0.floatArray
+
+            val maxPosition = getMaxPosition(confidences)
+
+            model.close()
+
+            // 0 stationary, 1 moving
+            return maxPosition
+
+        } catch (e: Exception) {
+            Log.e("STATIONARY OR MOVING CLASSIFIER", "An error occurred: ${e.message}")
+        }
+        return -1
+    }
+
+    private fun movingClassifier(inputFeatures: TensorBuffer) {
+        try {
+            val model = MovingClassifier.newInstance(this)
+
+            // Runs model inference and gets result.
+            val outputs = model.process(inputFeatures)
             val outputFeature0 = outputs.outputFeature0AsTensorBuffer
 
             val confidences = outputFeature0.floatArray
 
-            var maxPosition = 0
-            var maxConfidence = 0F
+            val maxPosition = getMaxPosition(confidences)
 
-            for (i in confidences.indices) {
-                if (confidences[i] > maxConfidence) {
-                    maxConfidence = confidences[i]
-                    maxPosition = i
-                }
-            }
-
-            val CLASSES = arrayOf(
-                "misc_movements&normal_breathing",
-                "sitting&singing",
-                "standing&talking",
-                "sitting&normal_breathing",
-                "standing&laughing",
-                "lying_down_back&talking",
-                "standing&normal_breathing",
-                "lying_down_back&coughing",
-                "standing&singing",
-                "shuffle_walking&normal_breathing",
-                "descending_stairs&normal_breathing",
-                "sitting&eating",
-                "standing&coughing",
-                "lying_down_stomach&normal_breathing",
-                "lying_down_stomach&talking",
-                "lying_down_left&hyperventilating",
-                "sitting&hyperventilating",
-                "lying_down_back&singing",
-                "lying_down_right&hyperventilating",
-                "walking&normal_breathing",
-                "sitting&coughing",
-                "sitting&talking",
-                "lying_down_right&coughing",
-                "lying_down_stomach&hyperventilating",
-                "lying_down_left&normal_breathing",
-                "standing&hyperventilating",
-                "lying_down_stomach&laughing",
-                "lying_down_left&coughing",
-                "standing&eating",
-                "running&normal_breathing",
-                "lying_down_stomach&singing",
-                "lying_down_back&hyperventilating",
-                "lying_down_back&normal_breathing",
-                "lying_down_right&normal_breathing",
-                "lying_down_left&laughing",
-                "lying_down_left&talking",
-                "ascending_stairs&normal_breathing",
-                "lying_down_right&laughing",
-                "lying_down_right&singing",
-                "lying_down_right&talking",
-                "lying_down_back&laughing",
-                "sitting&laughing",
-                "lying_down_stomach&coughing",
-                "lying_down_left&singing"
+            val classes = arrayOf(
+                "walking",
+                "ascending_stairs",
+                "descending_stairs",
+                "shuffle_walking",
+                "running",
+                "misc_movements"
             )
 
             val result: TextView = findViewById(R.id.classificationText)
-            result.setText(CLASSES[maxPosition])
+            result.setText(classes[maxPosition])
 
-            // Releases model resources if no longer used.
             model.close()
+
         } catch (e: Exception) {
-            Log.e("CLASSIFIER", "An error occurred: ${e.message}")
+            Log.e("MOVING CLASSIFIER", "An error occurred: ${e.message}")
         }
     }
 
-    private fun classifyGyroActivity(data: ArrayList<Array<Float>>) {
+    private fun stationaryPositionClassifier(inputFeatures: TensorBuffer): Int {
         try {
-            val context = this
-            val model = Cnn2.newInstance(context)
-
-            // Creates inputs for reference.
-            val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 4*noOfSecondsForModel, 6), DataType.FLOAT32)
-            val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*4*noOfSecondsForModel*6)
-            byteBuffer.order(ByteOrder.nativeOrder())
-
-            for (array in data) {
-                for (value in array) {
-                    byteBuffer.putFloat(value)
-                }
-            }
-
-            inputFeature0.loadBuffer(byteBuffer)
+            val model = StationaryPositionClassifier.newInstance(this)
 
             // Runs model inference and gets result.
-            val outputs = model.process(inputFeature0)
+            val outputs = model.process(inputFeatures)
             val outputFeature0 = outputs.outputFeature0AsTensorBuffer
 
-            val confidences = outputFeature0.floatArray // could be .getFloatArray() instead
+            val confidences = outputFeature0.floatArray
 
-            var maxPosition = 0
-            var maxConfidence = 0F
+            val maxPosition = getMaxPosition(confidences)
 
-            for (i in confidences.indices) {
-                if (confidences[i] > maxConfidence) {
-                    maxConfidence = confidences[i]
-                    maxPosition = i
-                }
-            }
+            model.close()
 
-            val CLASSES = arrayOf(
-                "misc_movements&normal_breathing",
-                "sitting&singing",
-                "standing&talking",
-                "sitting&normal_breathing",
-                "standing&laughing",
-                "lying_down_back&talking",
-                "standing&normal_breathing",
-                "lying_down_back&coughing",
-                "standing&singing",
-                "shuffle_walking&normal_breathing",
-                "descending_stairs&normal_breathing",
-                "sitting&eating",
-                "standing&coughing",
-                "lying_down_stomach&normal_breathing",
-                "lying_down_stomach&talking",
-                "lying_down_left&hyperventilating",
-                "sitting&hyperventilating",
-                "lying_down_back&singing",
-                "lying_down_right&hyperventilating",
-                "walking&normal_breathing",
-                "sitting&coughing",
-                "sitting&talking",
-                "lying_down_right&coughing",
-                "lying_down_stomach&hyperventilating",
-                "lying_down_left&normal_breathing",
-                "standing&hyperventilating",
-                "lying_down_stomach&laughing",
-                "lying_down_left&coughing",
-                "standing&eating",
-                "running&normal_breathing",
-                "lying_down_stomach&singing",
-                "lying_down_back&hyperventilating",
-                "lying_down_back&normal_breathing",
-                "lying_down_right&normal_breathing",
-                "lying_down_left&laughing",
-                "lying_down_left&talking",
-                "ascending_stairs&normal_breathing",
-                "lying_down_right&laughing",
-                "lying_down_right&singing",
-                "lying_down_right&talking",
-                "lying_down_back&laughing",
-                "sitting&laughing",
-                "lying_down_stomach&coughing",
-                "lying_down_left&singing"
+            return maxPosition
+
+        } catch (e: Exception) {
+            Log.e("STATIONARY POSITION CLASSIFIER", "An error occurred: ${e.message}")
+        }
+        return -1
+    }
+
+    private fun sittingOrStandingClassifier(inputFeatures: TensorBuffer) {
+        try {
+            // Runs model inference and gets result.
+            val model = SittingStandingModel.newInstance(this)
+            val outputs = model.process(inputFeatures)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            val confidences = outputFeature0.floatArray
+
+            val maxPosition = getMaxPosition(confidences)
+
+            val classes = arrayOf(
+                "sitting_or_standing&coughing",
+                "sitting_or_standing&hyperventilating",
+                "sitting_or_standing&normal_breathing",
+                "sitting_or_standing&talking",
+                "sitting_or_standing&eating",
+                "sitting_or_standing&singing",
+                "sitting_or_standing&laughing"
             )
 
             val result: TextView = findViewById(R.id.classificationText)
-            result.setText(CLASSES[maxPosition])
-
-            // Releases model resources if no longer used.
+            val displayText = "sittingOrStanding&" + classes[maxPosition]
+            result.setText(displayText)
             model.close()
         } catch (e: Exception) {
-            Log.e("CLASSIFIER", "An error occurred: ${e.message}")
+            Log.e("LYING BACK CLASSIFIER", "An error occurred: ${e.message}")
         }
     }
+
+    private fun lyingBackClassifier(inputFeatures: TensorBuffer) {
+        try {
+            // Runs model inference and gets result.
+            val model = LyingDownBackModel.newInstance(this)
+            val outputs = model.process(inputFeatures)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            val confidences = outputFeature0.floatArray
+
+            val maxPosition = getMaxPosition(confidences)
+
+            val classes = arrayOf(
+                "coughing",
+                "hyperventilating",
+                "talking",
+                "singing",
+                "laughing",
+                "normal_breathing"
+            )
+
+            val result: TextView = findViewById(R.id.classificationText)
+            val displayText = "lyingBack&" + classes[maxPosition]
+            result.setText(displayText)
+            model.close()
+        } catch (e: Exception) {
+            Log.e("LYING BACK CLASSIFIER", "An error occurred: ${e.message}")
+        }
+    }
+
+    private fun lyingStomachClassifier(inputFeatures: TensorBuffer) {
+        try {
+            // Runs model inference and gets result.
+            val model = LyingDownStomachModel.newInstance(this)
+            val outputs = model.process(inputFeatures)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            val confidences = outputFeature0.floatArray
+
+            val maxPosition = getMaxPosition(confidences)
+
+            val classes = arrayOf(
+                "coughing",
+                "hyperventilating",
+                "talking",
+                "singing",
+                "laughing",
+                "normal_breathing"
+            )
+
+            val result: TextView = findViewById(R.id.classificationText)
+            val displayText = "lyingStomach&" + classes[maxPosition]
+            result.setText(displayText)
+
+            model.close()
+        } catch (e: Exception) {
+            Log.e("LYING STOMACH CLASSIFIER", "An error occurred: ${e.message}")
+        }
+    }
+
+    private fun lyingRightClassifier(inputFeatures: TensorBuffer) {
+        try {
+            // Runs model inference and gets result.
+            val model = LyingDownRightModel.newInstance(this)
+            val outputs = model.process(inputFeatures)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            val confidences = outputFeature0.floatArray
+
+            val maxPosition = getMaxPosition(confidences)
+
+            val classes = arrayOf(
+                "coughing",
+                "hyperventilating",
+                "talking",
+                "singing",
+                "laughing",
+                "normal_breathing"
+            )
+
+            val result: TextView = findViewById(R.id.classificationText)
+            val displayText = "lyingRight&" + classes[maxPosition]
+            result.setText(displayText)
+
+            model.close()
+        } catch (e: Exception) {
+            Log.e("LYING RIGHT CLASSIFIER", "An error occurred: ${e.message}")
+        }
+    }
+
+    private fun lyingLeftClassifier(inputFeatures: TensorBuffer) {
+        try {
+            // Runs model inference and gets result.
+            val model = LyingDownLeftModel.newInstance(this)
+            val outputs = model.process(inputFeatures)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            val confidences = outputFeature0.floatArray
+
+            val maxPosition = getMaxPosition(confidences)
+
+            val classes = arrayOf(
+                "coughing",
+                "hyperventilating",
+                "talking",
+                "singing",
+                "laughing",
+                "normal_breathing"
+            )
+
+            val result: TextView = findViewById(R.id.classificationText)
+            val displayText = "lyingLeft&" + classes[maxPosition]
+            result.setText(displayText)
+
+            model.close()
+        } catch (e: Exception) {
+            Log.e("LYING LEFT CLASSIFIER", "An error occurred: ${e.message}")
+        }
+    }
+
+
+    private fun getMaxPosition(confidences: FloatArray): Int {
+        var maxPosition = 0
+        var maxConfidence = 0F
+        for (i in confidences.indices) {
+            if (confidences[i] > maxConfidence) {
+                maxConfidence = confidences[i]
+                maxPosition = i
+            }
+        }
+        return maxPosition
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
