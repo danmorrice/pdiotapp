@@ -39,35 +39,6 @@ class ClassifyActivity: AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigator)
         bottomNavigationView.selectedItemId = R.id.classify_page
 
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.home_page -> {
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.live_data_page -> {
-                    val intent = Intent(this, LiveDataActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.classify_page -> {
-                    val intent = Intent(this, ClassifyActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.setup_page -> {
-                    val intent = Intent(this, ConnectingActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                else -> false
-            }
-        }
 
         val result: TextView = findViewById(R.id.displayText)
 
@@ -112,6 +83,37 @@ class ClassifyActivity: AppCompatActivity() {
         looperRespeck = handlerThreadRespeck.looper
         val handlerRespeck = Handler(looperRespeck)
         this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.home_page -> {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.live_data_page -> {
+                    val intent = Intent(this, LiveDataActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.classify_page -> {
+                    //val intent = Intent(this, ClassifyActivity::class.java)
+                    //startActivity(intent)
+                    true
+                }
+
+                R.id.setup_page -> {
+                    val intent = Intent(this, ConnectingActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                else -> false
+            }
+        }
+
     }
 
     private fun setupDataList() {
