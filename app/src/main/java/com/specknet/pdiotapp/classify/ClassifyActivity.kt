@@ -142,7 +142,10 @@ class ClassifyActivity: AppCompatActivity() {
                         gyroDataStream.clear()
                         gyroDataPointCounter = 0
 
+                        val result: TextView = findViewById(R.id.classificationText)
+
                         dataPoint = arrayOf(accelX, accelY, accelZ)
+                        updateData(dataPoint, false)
                     } else {
                         // If we switch to gyro data, clear the non gyro stream so it is empty when
                         // we return to it
@@ -157,7 +160,6 @@ class ClassifyActivity: AppCompatActivity() {
 
                         dataPoint = arrayOf(accelX, accelY, accelZ, gyroX, gyroY, gyroZ)
                     }
-                    updateData(dataPoint, false)
                 }
             }
         }
@@ -174,36 +176,43 @@ class ClassifyActivity: AppCompatActivity() {
             dataStream = nonGyroDataStream
         }
 
-        // Add the new data point to the end of the ArrayList
-        dataStream.add(dataPoint)
-
         // If the ArrayList is full, remove the first element
         if (dataStream.size == 25*noOfSecondsForModel) {
             dataStream.removeAt(0)
         }
+        // Add the new data point to the end of the ArrayList
+        dataStream.add(dataPoint)
+        nonGyroDataPointCounter++
+
+        if (nonGyroDataPointCounter == 25) {
+            nonGyroDataPointCounter = 0
+            inputFeatures = prepareDataForClassification(dataStream, 3)
+            classifyNonGyroActivity(inputFeatures)
+        }
+
 
         // Classify activity after every 12 data points are read in (~0.5 seconds)
-        if (isGyroOn) {
-            gyroDataPointCounter++
-            if (gyroDataPointCounter == 12) {
-                gyroDataPointCounter = 0
-                inputFeatures = prepareDataForClassification(dataStream, 6)
-                // TODO: Use input features for gyroscope data
-            }
-        } else {
-            nonGyroDataPointCounter++
-            if (nonGyroDataPointCounter == 12) {
-                nonGyroDataPointCounter = 0
-                inputFeatures = prepareDataForClassification(dataStream, 3)
-                classifyNonGyroActivity(inputFeatures)
-            }
-        }
+//        if (isGyroOn) {
+//            gyroDataPointCounter++
+//            if (gyroDataPointCounter == 12) {
+//                gyroDataPointCounter = 0
+//                inputFeatures = prepareDataForClassification(dataStream, 6)
+//                // TODO: Use input features for gyroscope data
+//            }
+//        } else {
+//            nonGyroDataPointCounter++
+//            if (nonGyroDataPointCounter == 12) {
+//                nonGyroDataPointCounter = 0
+//                inputFeatures = prepareDataForClassification(dataStream, 3)
+//                classifyNonGyroActivity(inputFeatures)
+//            }
+//        }
     }
 
     private fun prepareDataForClassification(data: ArrayList<Array<Float>>, dataWidth: Int): TensorBuffer {
         // Creates inputs for reference.
-        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 4*noOfSecondsForModel, dataWidth), DataType.FLOAT32)
-        val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*4*noOfSecondsForModel*dataWidth)
+        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 100, 3), DataType.FLOAT32)
+        val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*100*3)
         byteBuffer.order(ByteOrder.nativeOrder())
         for (array in data) {
             for (value in array) {
@@ -216,36 +225,37 @@ class ClassifyActivity: AppCompatActivity() {
 
     private fun classifyNonGyroActivity(inputFeatures: TensorBuffer) {
         try {
+            val result: TextView = findViewById(R.id.classificationText)
+
             // TODO: Deal with case binary classifier returns -1 (failure)
             val binaryClassification = stationaryOrMovingClassifier(inputFeatures)
 
-            val result: TextView = findViewById(R.id.classificationText)
-            result.setText(result.toString())
+            result.setText(binaryClassification.toString())
 
-//            if (binaryClassification == 1) {
-//                // Prediction is moving
-//                movingClassifier(inputFeatures)
-//                return
-//            }
-//
-//            // Else prediction is moving
-//            val stationaryPosition = stationaryPositionClassifier(inputFeatures)
-//            if (stationaryPosition == 0) {
-//                // Sitting or standing
-//                sittingOrStandingClassifier(inputFeatures)
-//            } else if (stationaryPosition == 1) {
-//                // Lying down on back
-//                lyingBackClassifier(inputFeatures)
-//            } else if (stationaryPosition == 2) {
-//                // Lying down on stomach
-//                lyingStomachClassifier(inputFeatures)
-//            } else if (stationaryPosition == 3) {
-//                // Lying down on right
-//                lyingRightClassifier(inputFeatures)
-//            } else {
-//                // Lying down on left
-//                lyingLeftClassifier(inputFeatures)
-//            }
+            if (binaryClassification == 1) {
+                // Prediction is moving
+                movingClassifier(inputFeatures)
+                return
+            }
+
+            // Else prediction is moving
+            val stationaryPosition = stationaryPositionClassifier(inputFeatures)
+            if (stationaryPosition == 0) {
+                // Sitting or standing
+                sittingOrStandingClassifier(inputFeatures)
+            } else if (stationaryPosition == 1) {
+                // Lying down on back
+                lyingBackClassifier(inputFeatures)
+            } else if (stationaryPosition == 2) {
+                // Lying down on stomach
+                lyingStomachClassifier(inputFeatures)
+            } else if (stationaryPosition == 3) {
+                // Lying down on right
+                lyingRightClassifier(inputFeatures)
+            } else {
+                // Lying down on left
+                lyingLeftClassifier(inputFeatures)
+            }
 
         } catch (e: Exception) {
             Log.e("STATIONARY OR MOVING CLASSIFIER", "An error occurred: ${e.message}")
@@ -267,7 +277,6 @@ class ClassifyActivity: AppCompatActivity() {
 
             // 0 stationary, 1 moving
             return maxPosition
-
         } catch (e: Exception) {
             Log.e("STATIONARY OR MOVING CLASSIFIER", "An error occurred: ${e.message}")
         }
@@ -349,7 +358,7 @@ class ClassifyActivity: AppCompatActivity() {
             )
 
             val result: TextView = findViewById(R.id.classificationText)
-            val displayText = "sittingOrStanding&" + classes[maxPosition]
+            val displayText = classes[maxPosition]
             result.setText(displayText)
             model.close()
         } catch (e: Exception) {

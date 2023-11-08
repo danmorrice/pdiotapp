@@ -116,8 +116,7 @@ class LiveDataActivity : AppCompatActivity() {
         val handlerThreadRespeck = HandlerThread("bgThreadRespeckLive")
         handlerThreadRespeck.start()
         looperRespeck = handlerThreadRespeck.looper
-        val handlerRespeck = Handler(looperRespeck)
-        this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
+        this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, null)
     }
 
 
