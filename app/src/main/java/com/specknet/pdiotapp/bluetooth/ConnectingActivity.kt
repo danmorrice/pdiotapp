@@ -19,8 +19,10 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.specknet.pdiotapp.MainActivity
 import com.specknet.pdiotapp.R
+import com.specknet.pdiotapp.SignInActivity
 import com.specknet.pdiotapp.barcode.BarcodeActivity
 import com.specknet.pdiotapp.classify.ClassifyActivity
 import com.specknet.pdiotapp.live.LiveDataActivity
@@ -39,6 +41,7 @@ class ConnectingActivity : AppCompatActivity() {
     private lateinit var respeckID: EditText
     private lateinit var connectSensorsButton: Button
     private lateinit var restartConnectionButton: Button
+    private lateinit var signOutOfAccountButton: Button
 //    private lateinit var disconnectRespeckButton: Button
 
     // Thingy
@@ -95,6 +98,7 @@ class ConnectingActivity : AppCompatActivity() {
         respeckID = findViewById(R.id.respeck_code)
         connectSensorsButton = findViewById(R.id.connect_sensors_button)
         restartConnectionButton = findViewById(R.id.restart_service_button)
+        signOutOfAccountButton = findViewById(R.id.sign_out_of_account_button)
 
 //        thingyID = findViewById(R.id.thingy_code)
 
@@ -125,6 +129,23 @@ class ConnectingActivity : AppCompatActivity() {
         restartConnectionButton.setOnClickListener {
             startSpeckService()
         }
+
+        //Sign User out of Firebase account
+        signOutOfAccountButton.setOnClickListener {
+            val firebaseAuth = FirebaseAuth.getInstance()
+
+            if (firebaseAuth.currentUser != null) {
+                firebaseAuth.signOut()
+                Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "Not signed in", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+
 
 
         // first read shared preferences to see if there was a respeck there already

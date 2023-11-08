@@ -63,5 +63,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/respeck_graphs" />
 
+    <!--android:rotation="90"-->
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
