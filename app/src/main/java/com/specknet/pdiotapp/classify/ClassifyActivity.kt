@@ -219,30 +219,33 @@ class ClassifyActivity: AppCompatActivity() {
             // TODO: Deal with case binary classifier returns -1 (failure)
             val binaryClassification = stationaryOrMovingClassifier(inputFeatures)
 
-            if (binaryClassification == 1) {
-                // Prediction is moving
-                movingClassifier(inputFeatures)
-                return
-            }
+            val result: TextView = findViewById(R.id.classificationText)
+            result.setText(result.toString())
 
-            // Else prediction is moving
-            val stationaryPosition = stationaryPositionClassifier(inputFeatures)
-            if (stationaryPosition == 0) {
-                // Sitting or standing
-                sittingOrStandingClassifier(inputFeatures)
-            } else if (stationaryPosition == 1) {
-                // Lying down on back
-                lyingBackClassifier(inputFeatures)
-            } else if (stationaryPosition == 2) {
-                // Lying down on stomach
-                lyingStomachClassifier(inputFeatures)
-            } else if (stationaryPosition == 3) {
-                // Lying down on right
-                lyingRightClassifier(inputFeatures)
-            } else {
-                // Lying down on left
-                lyingLeftClassifier(inputFeatures)
-            }
+//            if (binaryClassification == 1) {
+//                // Prediction is moving
+//                movingClassifier(inputFeatures)
+//                return
+//            }
+//
+//            // Else prediction is moving
+//            val stationaryPosition = stationaryPositionClassifier(inputFeatures)
+//            if (stationaryPosition == 0) {
+//                // Sitting or standing
+//                sittingOrStandingClassifier(inputFeatures)
+//            } else if (stationaryPosition == 1) {
+//                // Lying down on back
+//                lyingBackClassifier(inputFeatures)
+//            } else if (stationaryPosition == 2) {
+//                // Lying down on stomach
+//                lyingStomachClassifier(inputFeatures)
+//            } else if (stationaryPosition == 3) {
+//                // Lying down on right
+//                lyingRightClassifier(inputFeatures)
+//            } else {
+//                // Lying down on left
+//                lyingLeftClassifier(inputFeatures)
+//            }
 
         } catch (e: Exception) {
             Log.e("STATIONARY OR MOVING CLASSIFIER", "An error occurred: ${e.message}")
