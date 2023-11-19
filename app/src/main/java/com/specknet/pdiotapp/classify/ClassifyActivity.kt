@@ -4,14 +4,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.specknet.pdiotapp.MainActivity
 import com.specknet.pdiotapp.R
 import com.specknet.pdiotapp.bluetooth.ConnectingActivity
@@ -23,6 +28,8 @@ import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class ClassifyActivity: AppCompatActivity() {
 
@@ -32,6 +39,22 @@ class ClassifyActivity: AppCompatActivity() {
 
     lateinit var lastThreeSecondsData: ArrayList<Array<Float>>
 
+    private lateinit var database: DatabaseReference
+
+//    private lateinit var testButton : Button
+
+    private lateinit var task_one_model_button : Button
+    private lateinit var task_two_model_button : Button
+    private lateinit var task_three_model_button : Button
+    private lateinit var task_four_model_button : Button
+
+
+
+
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_classify)
@@ -39,8 +62,16 @@ class ClassifyActivity: AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigator)
         bottomNavigationView.selectedItemId = R.id.classify_page
 
+        task_one_model_button = findViewById(R.id.task_1_model_button)
+        task_two_model_button = findViewById(R.id.task_2_model_button)
+        task_three_model_button = findViewById(R.id.task_3_model_button)
+        task_four_model_button = findViewById(R.id.task_4_model_button)
 
-        val result: TextView = findViewById(R.id.displayText)
+
+        val result: TextView = findViewById(R.id.classify_box_text)
+
+//        testButton = findViewById(R.id.testButton)
+
 
 //        result.setText("Is this working")
 
@@ -113,6 +144,99 @@ class ClassifyActivity: AppCompatActivity() {
                 else -> false
             }
         }
+
+        task_one_model_button.setOnClickListener {
+            if (!task_one_model_button.isSelected) {
+                task_one_model_button.isSelected = true
+                task_two_model_button.isSelected = false
+                task_three_model_button.isSelected = false
+                task_four_model_button.isSelected = false
+                //TODO: ADD MODEL CODE HERE
+                Toast.makeText(this, "Task 1 Model Selected", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        task_two_model_button.setOnClickListener {
+            if (!task_two_model_button.isSelected) {
+                task_one_model_button.isSelected = false
+                task_two_model_button.isSelected = true
+                task_three_model_button.isSelected = false
+                task_four_model_button.isSelected = false
+                //TODO: ADD MODEL CODE HERE
+                Toast.makeText(this, "Task 2 Model Selected", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        task_three_model_button.setOnClickListener {
+            if (!task_three_model_button.isSelected) {
+                task_one_model_button.isSelected = false
+                task_two_model_button.isSelected = false
+                task_three_model_button.isSelected = true
+                task_four_model_button.isSelected = false
+                //TODO: ADD MODEL CODE HERE
+                Toast.makeText(this, "Task 3 Model Selected", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        task_four_model_button.setOnClickListener {
+            if (!task_four_model_button.isSelected) {
+                task_one_model_button.isSelected = false
+                task_two_model_button.isSelected = false
+                task_three_model_button.isSelected = false
+                task_four_model_button.isSelected = true
+                //TODO: ADD MODEL CODE HERE
+                Toast.makeText(this, "Task 4 Model Selected", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
+        //Get the database instance
+        database = FirebaseDatabase.getInstance("https://pdiotapp-5c2f8-default-rtdb.europe-west1.firebasedatabase.app/")
+            .reference
+
+//        testButton.setOnClickListener {
+//
+//            //Get User UID of current user logged in
+//            val user = FirebaseAuth.getInstance().currentUser?.uid.toString()
+//
+//            val currentTime = System.currentTimeMillis()
+//
+//            val formattedTimeAndDate = SimpleDateFormat("HH:mm:ss")
+//
+//            val extractedDateFormatter = SimpleDateFormat("MMM dd,yyyy")
+//
+//
+//
+//            //val testDate: Date = Date(currentTime)
+//
+//            val testDate = "Nov 23,2023"
+//            val currentDateAndTime = formattedTimeAndDate.format(currentTime)
+//            val currentDateOnly = extractedDateFormatter.format(currentTime)
+//
+//            database.child(user).child(currentDateOnly).child(currentDateAndTime).setValue("test")
+//
+//
+////            if (currentDateOnly == testDate){
+////                database.child(user).child(currentDateAndTime).setValue("test")
+////            }else{
+////                database.child(user).child(currentDateAndTime).setValue("test")
+////            }
+//
+//            //Get the current time
+//            //val currentTime = System.currentTimeMillis()
+//
+//            //Get the current activity
+//            //val currentActivity = result.text.toString()
+//
+//            //Create a new entry in the database
+//
+//            //database.child("users").child(user.toString()).child("activity").child(currentTime.toString()).setValue(currentActivity)
+//
+//
+//        }
+
+
+
 
     }
 
@@ -213,8 +337,26 @@ class ClassifyActivity: AppCompatActivity() {
 //                val result: TextView = findViewById(R.id.displayText)
 //                result.setText("working")   //CLASSES[maxPosition]
 //            }
-            val result: TextView = findViewById(R.id.displayText)
+            val result: TextView = findViewById(R.id.classify_box_text)
             result.setText(CLASSES[maxPosition])   //CLASSES[maxPosition]
+
+            database = FirebaseDatabase.getInstance("https://pdiotapp-5c2f8-default-rtdb.europe-west1.firebasedatabase.app/")
+                .reference
+            val user = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+            val currentTime = System.currentTimeMillis()
+
+            val formattedTimeAndDate = SimpleDateFormat("HH:mm:ss")
+
+            val extractedDateFormatter = SimpleDateFormat("MMM dd,yyyy")
+
+            val currentDateAndTime = formattedTimeAndDate.format(currentTime)
+            val currentDateOnly = extractedDateFormatter.format(currentTime)
+            database.child(user).child(currentDateOnly).child(currentDateAndTime).setValue(currentDateAndTime + " : " + CLASSES[maxPosition])
+
+
+
+
 
             // Releases model resources if no longer used.
             model.close()

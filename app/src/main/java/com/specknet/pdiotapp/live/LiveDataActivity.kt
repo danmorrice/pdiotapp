@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
+import android.widget.Button
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
@@ -17,6 +18,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.specknet.pdiotapp.HistoricalData
 import com.specknet.pdiotapp.MainActivity
 import com.specknet.pdiotapp.R
 import com.specknet.pdiotapp.bluetooth.ConnectingActivity
@@ -44,6 +46,8 @@ class LiveDataActivity : AppCompatActivity() {
 
     val filterTestRespeck = IntentFilter(Constants.ACTION_RESPECK_LIVE_BROADCAST)
 
+    private lateinit var historicalDataButton: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +55,8 @@ class LiveDataActivity : AppCompatActivity() {
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigator)
         bottomNavigationView.selectedItemId = R.id.live_data_page
+
+        historicalDataButton = findViewById(R.id.historical_data)
 
 
 
@@ -119,6 +125,13 @@ class LiveDataActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        historicalDataButton.setOnClickListener {
+            val intent = Intent(this, HistoricalData::class.java)
+            startActivity(intent)
+        }
+
+
     }
 
 

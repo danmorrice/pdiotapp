@@ -6,39 +6,171 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/header"
+        android:id="@+id/classify_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        android:layout_marginBottom="218dp"
         android:text="Classify Activity"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        android:textSize="30dp"
+        android:layout_marginTop="15dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.08"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="72dp"
-        android:text="Show text"
-        app:layout_constraintBottom_toTopOf="@+id/displayText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="260dp"/>
 
     <TextView
-        android:id="@+id/displayText"
-        android:layout_width="200dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="177dp"
-        android:text="No classification yet"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigator"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/classify_description_text"
+        android:text="Please select the model you would like to classify with:"
+        app:layout_constraintTop_toBottomOf="@+id/classify_header"
+        app:layout_constraintStart_toStartOf="@+id/classify_header"
+        android:layout_marginStart="10dp"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"/>
+
+    <Button
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/task_1_model_button"
+        android:text="General Human Activities"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@+id/classify_description_text"
+        app:layout_constraintStart_toStartOf="@+id/classify_description_text"
+        android:layout_marginStart="15dp"
+        android:background="@drawable/classify_button_selector"
+        android:textColor="@drawable/classify_text_selector"
+        android:layout_marginTop="10dp"
+        />
+
+    <Button
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/task_2_model_button"
+        android:text="Stationary Activities with Respiratory Symptoms"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@+id/task_1_model_button"
+        app:layout_constraintStart_toStartOf="@+id/classify_description_text"
+        android:layout_marginStart="15dp"
+        android:background="@drawable/classify_button_selector"
+        android:textColor="@drawable/classify_text_selector"
+        android:layout_marginTop="10dp"
+        />
+
+    <Button
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/task_3_model_button"
+        android:text="Stationary Activities with Respiratory Symptoms and Other Behaviors"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@+id/task_2_model_button"
+        app:layout_constraintStart_toStartOf="@+id/classify_description_text"
+        android:layout_marginStart="15dp"
+        android:background="@drawable/classify_button_selector"
+        android:textColor="@drawable/classify_text_selector"
+        android:layout_marginTop="10dp"
+        />
+
+    <Button
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/task_4_model_button"
+        android:text="Addition of Gyroscope Data in Classification"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@+id/task_3_model_button"
+        app:layout_constraintStart_toStartOf="@+id/classify_description_text"
+        android:layout_marginStart="15dp"
+        android:background="@drawable/classify_button_selector"
+        android:textColor="@drawable/classify_text_selector"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        />
+
+    <Button
+        android:id="@+id/show_text_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:text="Show text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/task_4_model_button"
+        app:layout_constraintBottom_toTopOf="@+id/linear_layout_of_large_classification_box"
+        />
+
+
+<!--    <TextView-->
+<!--        android:id="@+id/displayText"-->
+<!--        android:layout_width="200dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_marginBottom="167dp"-->
+<!--        android:text="No classification yet"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/button" />-->
+
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="110dp"
+        android:background="@drawable/rounded_button"
+        android:orientation="vertical"
+        android:id="@+id/linear_layout_of_large_classification_box"
+        app:layout_constraintTop_toBottomOf="@+id/show_text_button"
+        app:layout_constraintStart_toStartOf="@+id/task_1_model_button"
+        android:layout_marginTop="50dp">
+
+        <TextView
+            android:id="@+id/title_of_classify_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Classification:"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center"
+            app:layout_constraintBottom_toBottomOf="@+id/bottom_navigator"
+            android:layout_marginBottom="10dp"
+            />
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_with_white_border"
+            android:orientation="vertical"
+            android:id="@+id/inner_linear_layout"
+            android:gravity="center"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/title_of_classify_box">
+
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/classify_box_text"
+            android:text="No classification yet"
+            android:textColor="@android:color/white"
+            android:textSize="15dp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/title_of_classify_box"
+            app:layout_constraintStart_toStartOf="@+id/title_of_classify_box"/>
+
+    </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+
+<!--    <Button-->
+<!--        android:id="@+id/testButton"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="4dp"-->
+<!--        android:text="Send test data"-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/displayText"-->
+<!--        tools:layout_editor_absoluteX="138dp" />-->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigator"
@@ -51,19 +183,18 @@
         app:itemIconTint="@drawable/selector"
         app:itemTextColor="@drawable/selector"
         app:labelVisibilityMode="labeled"
-        app:menu="@menu/nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/nav_menu" />
 
     <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="1.5dp"
         android:background="@color/colorPrimary"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigator"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

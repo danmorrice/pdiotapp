@@ -95,6 +95,7 @@ class ConnectingActivity : AppCompatActivity() {
 
             startSpeckService()
 
+            Log.i("ThingyID2", thingyID.text.toString())
         }
 
         restartConnectionButton.setOnClickListener {
@@ -139,6 +140,7 @@ class ConnectingActivity : AppCompatActivity() {
                 firebaseAuth.signOut()
                 Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
             } else {
                 Toast.makeText(this, "Not signed in", Toast.LENGTH_SHORT).show()
             }
@@ -362,6 +364,7 @@ class ConnectingActivity : AppCompatActivity() {
                 Toast.makeText(this, "NFC scanned ($ble_addr)", Toast.LENGTH_LONG).show()
 
                 thingyID.setText(ble_addr)
+                Log.i("ThingyID1", thingyID.text.toString())
 
             }
 

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HistoricalData">
+
+    <TextView
+        android:id="@+id/HistoricalDataText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Historical Data"
+        android:textSize="30dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="@+id/linear_layout_for_data_from_database"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <Spinner
+        android:id="@+id/historicalDropDownMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
+        app:layout_constraintStart_toStartOf="@+id/linear_layout_for_data_from_database"
+        app:layout_constraintTop_toBottomOf="@+id/HistoricalDataText"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/fetchHistoricalDataButton"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="40dp"
+        android:text="Fetch Data"
+        android:background="@drawable/rounded_grey_button"
+        app:layout_constraintTop_toBottomOf="@+id/HistoricalDataText"
+        app:layout_constraintEnd_toEndOf="@+id/linear_layout_for_data_from_database"
+        />
+
+    <LinearLayout
+        android:layout_width="380dp"
+        android:layout_height="500dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/fetchHistoricalDataButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/purple_border"
+        android:id="@+id/linear_layout_for_data_from_database"
+        >
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fetchHistoricalDataButton">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/DataTextBoxOfRetrievedData"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text=""
+                    android:textSize="19dp"/>
+            </LinearLayout>
+
+
+        </ScrollView>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/returnToLiveDataButton"
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_button"
+        android:text="Return to Live Data"
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linear_layout_for_data_from_database"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

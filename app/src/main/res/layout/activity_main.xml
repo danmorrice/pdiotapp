@@ -7,65 +7,264 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_anchor="@+id/constraintLayout"
-        app:layout_anchorGravity="center">
+        android:id="@+id/main_linear_layout"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100px"
-            android:text="I want to"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <Button
-            android:id="@+id/ble_button"
-            android:layout_width="550px"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="180dp"
-            android:background="#03A9F4"
-            android:text="Connect sensors"
-            android:textColor="#FFFFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/classify_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="60dp"
-            android:background="#03A9F4"
-            android:text="Classify"
-            android:textColor="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@+id/live_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.47"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView2"
-            app:layout_constraintVertical_bias="0.0" />
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <Button
-        android:id="@+id/live_button"
-        android:layout_width="169dp"
+    <TextView
+        android:id="@+id/welcome_message"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="204dp"
-        android:background="#03A9F4"
-        android:text="Watch live processing"
-        android:textColor="#FFFFFF"
-        app:layout_anchor="@+id/constraintLayout"
-        app:layout_anchorGravity="center" />
+        android:text="Greetings"
+        android:textSize="30dp"
+        android:layout_gravity="left"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="20dp"
+        />
+
+
+
+<!--        <TextView-->
+<!--            android:id="@+id/how_to_use_app"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="About our app:"-->
+<!--            android:textSize="20dp"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/welcome_message"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/welcome_message"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:layout_marginLeft="15dp"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/step1_text"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="1. Connect to the Respeck in Settings"-->
+<!--            android:textSize="15dp"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/how_to_use_app"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/how_to_use_app"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="25dp"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/step2_text"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="2. View your live data readings measured by the Respeck and your previously classified data in the Data tab"-->
+<!--            android:textSize="15dp"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/step1_text"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/step1_text"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="25dp"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/step3_text"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="3. You can classify your current activity in the Classify tab using one of four models"-->
+<!--            android:textSize="15dp"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/step2_text"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/step2_text"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="25dp"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/step4_text"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="4. Each Classification is made based on 3s of data"-->
+<!--            android:textSize="15dp"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/step3_text"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/step3_text"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="25dp"/>-->
+
+        <LinearLayout
+            android:layout_width="390dp"
+            android:layout_height="150dp"
+            android:background="@drawable/rounded_transparent_border"
+            android:orientation="vertical"
+            android:id="@+id/linear_layout_of_recent_classification_box"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/welcome_message"
+            app:layout_constraintStart_toStartOf="@+id/parent"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/title_of_recent_classify_box"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Most Recent Classification Was:"
+                android:textSize="20dp"
+                app:layout_constraintStart_toStartOf="@+id/your_activity_text"
+                android:layout_gravity="left"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="10dp"
+                />
+
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="100dp"
+                android:background="@drawable/rounded_with_white_border"
+                android:orientation="vertical"
+                android:id="@+id/inner_linear_layout"
+                android:gravity="center"
+                android:layout_gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/title_of_recent_classify_box">
+
+                <TextView
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recent_classify_box_text"
+                    android:text="You have no saved Classifications"
+                    android:textColor="@android:color/white"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    app:layout_constraintTop_toBottomOf="@+id/title_of_recent_classify_box"
+                    app:layout_constraintStart_toStartOf="@+id/title_of_recent_classify_box"
+                    />
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/linear_layout_of_bar_chart"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="370dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginBottom="0dp">
+
+            <!-- BarChart -->
+            <com.github.mikephil.charting.charts.BarChart
+                android:layout_width="390dp"
+                android:layout_height="350dp"
+                android:id="@+id/bar_chart"
+                android:layout_gravity="center"
+                android:background="@drawable/rounded_transparent_border"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="2dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/your_activity_text"
+                android:text="Your Activity Over the Past Week:"
+                android:textSize="20dp"
+                android:layout_gravity="start|top"
+                android:layout_marginStart="27dp"
+                android:layout_marginTop="30dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintStart_toStartOf="@+id/title_of_recent_classify_box"
+            />
+
+
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/help_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="right"
+            android:background="@drawable/help_circle_svgrepo_com"
+            app:layout_constraintEnd_toEndOf="@+id/parent"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigator"
+            app:layout_constraintTop_toBottomOf="@+id/bar_chart"
+            android:layout_marginTop="20dp"
+            />
+
+    </LinearLayout>
+
+
+
+
+
+
+
+
+
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/constraintLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        >-->
+
+<!--&lt;!&ndash;        <TextView&ndash;&gt;-->
+<!--&lt;!&ndash;            android:id="@+id/welcome_message"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_width="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:text="I want to"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_gravity="left"&ndash;&gt;-->
+<!--&lt;!&ndash;            app:layout_constraintStart_toStartOf="parent"&ndash;&gt;-->
+<!--&lt;!&ndash;            app:layout_constraintEnd_toEndOf="parent"&ndash;&gt;-->
+<!--&lt;!&ndash;            app:layout_constraintTop_toTopOf="parent"&ndash;&gt;-->
+<!--&lt;!&ndash;            app:layout_marginStart="10dp"&ndash;&gt;-->
+<!--&lt;!&ndash;            />&ndash;&gt;-->
+
+
+<!--        <Button-->
+<!--            android:id="@+id/ble_button"-->
+<!--            android:layout_width="10dp"-->
+<!--            android:layout_height="10dp"-->
+<!--            android:layout_marginBottom="180dp"-->
+<!--            android:background="#03A9F4"-->
+<!--            android:text="Connect sensors"-->
+<!--            android:textColor="#FFFFFF"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.497"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/classify_button"-->
+<!--            android:layout_width="10dp"-->
+<!--            android:layout_height="10dp"-->
+<!--            android:layout_marginBottom="60dp"-->
+<!--            android:background="#03A9F4"-->
+<!--            android:text="Classify"-->
+<!--            android:textColor="#FFFFFF"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/ble_button"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.47"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/live_button"-->
+<!--            app:layout_constraintVertical_bias="1.0" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/live_button"-->
+<!--            android:layout_width="10dp"-->
+<!--            android:layout_height="10dp"-->
+<!--            android:layout_marginBottom="204dp"-->
+<!--            android:background="#03A9F4"-->
+<!--            android:text="Watch live processing"-->
+<!--            android:textColor="#FFFFFF"-->
+<!--            app:layout_anchorGravity="center"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/ble_button"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/ble_button"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            />-->
+
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
 
     <View
         android:layout_width="match_parent"
