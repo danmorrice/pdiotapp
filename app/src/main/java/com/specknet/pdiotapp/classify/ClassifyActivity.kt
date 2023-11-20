@@ -27,6 +27,8 @@ import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.text.SimpleDateFormat
+import java.util.Date
 
 import com.specknet.pdiotapp.ml.Task1
 
@@ -104,7 +106,6 @@ class ClassifyActivity: AppCompatActivity() {
                 task_two_model_button.isSelected = false
                 task_three_model_button.isSelected = false
                 task_four_model_button.isSelected = false
-                //TODO: ADD MODEL CODE HERE
                 Toast.makeText(this, "Task 1 Model Selected", Toast.LENGTH_SHORT).show()
             }
         }
@@ -115,7 +116,6 @@ class ClassifyActivity: AppCompatActivity() {
                 task_two_model_button.isSelected = true
                 task_three_model_button.isSelected = false
                 task_four_model_button.isSelected = false
-                //TODO: ADD MODEL CODE HERE
                 Toast.makeText(this, "Task 2 Model Selected", Toast.LENGTH_SHORT).show()
             }
         }
@@ -126,7 +126,6 @@ class ClassifyActivity: AppCompatActivity() {
                 task_two_model_button.isSelected = false
                 task_three_model_button.isSelected = true
                 task_four_model_button.isSelected = false
-                //TODO: ADD MODEL CODE HERE
                 Toast.makeText(this, "Task 3 Model Selected", Toast.LENGTH_SHORT).show()
             }
         }
@@ -137,7 +136,6 @@ class ClassifyActivity: AppCompatActivity() {
                 task_two_model_button.isSelected = false
                 task_three_model_button.isSelected = false
                 task_four_model_button.isSelected = true
-                //TODO: ADD MODEL CODE HERE
                 Toast.makeText(this, "Task 4 Model Selected", Toast.LENGTH_SHORT).show()
             }
         }
@@ -315,6 +313,7 @@ class ClassifyActivity: AppCompatActivity() {
 
             model.close()
 
+            updateDatabase(classes[maxPosition])
         } catch (e: Exception) {
             Log.e("MOVING CLASSIFIER", "An error occurred: ${e.message}")
         }
@@ -333,6 +332,25 @@ class ClassifyActivity: AppCompatActivity() {
         return maxPosition
     }
 
+    private fun updateDatabase(classificationText: String) {
+        if (classificationText == "Miscellaneous") {
+            return
+        }
+        database = FirebaseDatabase.getInstance("https://pdiotapp-5c2f8-default-rtdb.europe-west1.firebasedatabase.app/")
+        .reference
+        val user = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+        val currentTime = System.currentTimeMillis()
+
+        val formattedTimeAndDate = SimpleDateFormat("HH:mm:ss")
+
+        val extractedDateFormatter = SimpleDateFormat("MMM dd,yyyy")
+
+        val currentDateAndTime = formattedTimeAndDate.format(currentTime)
+        val currentDateOnly = extractedDateFormatter.format(currentTime)
+        database.child(user).child(currentDateOnly).child(currentDateAndTime).setValue(currentDateAndTime + " : " + classificationText)
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -340,22 +358,3 @@ class ClassifyActivity: AppCompatActivity() {
         looperRespeck.quit()
     }
 }
-
-//val result: TextView = findViewById(R.id.classify_box_text)
-//result.setText(CLASSES[maxPosition])   //CLASSES[maxPosition]
-//
-//database = FirebaseDatabase.getInstance("https://pdiotapp-5c2f8-default-rtdb.europe-west1.firebasedatabase.app/")
-//.reference
-//val user = FirebaseAuth.getInstance().currentUser?.uid.toString()
-//
-//val currentTime = System.currentTimeMillis()
-//
-//val formattedTimeAndDate = SimpleDateFormat("HH:mm:ss")
-//
-//val extractedDateFormatter = SimpleDateFormat("MMM dd,yyyy")
-//
-//val currentDateAndTime = formattedTimeAndDate.format(currentTime)
-//val currentDateOnly = extractedDateFormatter.format(currentTime)
-//database.child(user).child(currentDateOnly).child(currentDateAndTime).setValue(currentDateAndTime + " : " + CLASSES[maxPosition])
-
-
