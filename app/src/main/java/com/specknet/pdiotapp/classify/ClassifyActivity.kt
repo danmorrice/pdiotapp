@@ -27,17 +27,8 @@ import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.text.SimpleDateFormat
-import java.util.Date
 
-//import com.specknet.pdiotapp.ml.StationaryOrMoving
-//import com.specknet.pdiotapp.ml.MovingClassifier
-//import com.specknet.pdiotapp.ml.StationaryPositionClassifier
-//import com.specknet.pdiotapp.ml.LyingDownBackModel
-//import com.specknet.pdiotapp.ml.LyingDownStomachModel
-//import com.specknet.pdiotapp.ml.LyingDownLeftModel
-//import com.specknet.pdiotapp.ml.LyingDownRightModel
-//import com.specknet.pdiotapp.ml.SittingStandingModel
+import com.specknet.pdiotapp.ml.Task1
 
 
 class ClassifyActivity: AppCompatActivity() {
@@ -56,16 +47,11 @@ class ClassifyActivity: AppCompatActivity() {
 
     private lateinit var database: DatabaseReference
 
-//    private lateinit var testButton : Button
 
     private lateinit var task_one_model_button : Button
     private lateinit var task_two_model_button : Button
     private lateinit var task_three_model_button : Button
     private lateinit var task_four_model_button : Button
-
-
-
-
 
 
 
@@ -81,22 +67,6 @@ class ClassifyActivity: AppCompatActivity() {
         task_two_model_button = findViewById(R.id.task_2_model_button)
         task_three_model_button = findViewById(R.id.task_3_model_button)
         task_four_model_button = findViewById(R.id.task_4_model_button)
-
-
-        val result: TextView = findViewById(R.id.classify_box_text)
-
-
-        setupDataStreams()
-
-        streamDataToModel(false)
-
-
-        // register receiver on another thread
-        val handlerThreadRespeck = HandlerThread("bgThreadRespeckLive")
-        handlerThreadRespeck.start()
-        looperRespeck = handlerThreadRespeck.looper
-        val handlerRespeck = Handler(looperRespeck)
-        this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -175,6 +145,17 @@ class ClassifyActivity: AppCompatActivity() {
         //Get the database instance
         database = FirebaseDatabase.getInstance("https://pdiotapp-5c2f8-default-rtdb.europe-west1.firebasedatabase.app/")
             .reference
+
+        setupDataStreams()
+        streamDataToModel(false)
+
+        // register receiver on another thread
+        val handlerThreadRespeck = HandlerThread("bgThreadRespeckLive")
+        handlerThreadRespeck.start()
+        looperRespeck = handlerThreadRespeck.looper
+        val handlerRespeck = Handler(looperRespeck)
+        this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
+
     }
 
     private fun setupDataStreams() {
@@ -208,8 +189,6 @@ class ClassifyActivity: AppCompatActivity() {
                         // we return to it
                         gyroDataStream.clear()
                         gyroDataPointCounter = 0
-
-                        val result: TextView = findViewById(R.id.classificationText)
 
                         dataPoint = arrayOf(accelX, accelY, accelZ)
                         updateData(dataPoint, false)
@@ -292,36 +271,12 @@ class ClassifyActivity: AppCompatActivity() {
 
     private fun classifyNonGyroActivity(inputFeatures: TensorBuffer) {
         try {
-            val result: TextView = findViewById(R.id.classificationText)
-
-            // TODO: Deal with case binary classifier returns -1 (failure)
-            val binaryClassification = stationaryOrMovingClassifier(inputFeatures)
-
-            result.setText(binaryClassification.toString())
-
-            if (binaryClassification == 1) {
-                // Prediction is moving
-                movingClassifier(inputFeatures)
-                return
+            if (task_one_model_button.isSelected) {
+                taskOneClassifier(inputFeatures)
             }
-
-            // Else prediction is moving
-            val stationaryPosition = stationaryPositionClassifier(inputFeatures)
-            if (stationaryPosition == 0) {
-                // Sitting or standing
-//                sittingOrStandingClassifier(inputFeatures)
-            } else if (stationaryPosition == 1) {
-                // Lying down on back
-//                lyingBackClassifier(inputFeatures)
-            } else if (stationaryPosition == 2) {
-                // Lying down on stomach
-//                lyingStomachClassifier(inputFeatures)
-            } else if (stationaryPosition == 3) {
-                // Lying down on right
-//                lyingRightClassifier(inputFeatures)
-            } else {
-                // Lying down on left
-//                lyingLeftClassifier(inputFeatures)
+            else {
+                val result: TextView = findViewById(R.id.classify_box_text)
+                result.setText("No model selected")
             }
 
         } catch (e: Exception) {
@@ -329,226 +284,40 @@ class ClassifyActivity: AppCompatActivity() {
         }
     }
 
-    private fun stationaryOrMovingClassifier(inputFeatures: TensorBuffer): Int {
-        try {
-//            val model = StationaryOrMoving.newInstance(this)
-//
-//            // Runs model inference and gets result.
-//            val outputs = model.process(inputFeatures)
-//            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
-//            val confidences = outputFeature0.floatArray
-//
-//            val maxPosition = getMaxPosition(confidences)
-//
-//            model.close()
-//
-//            // 0 stationary, 1 moving
-//            return maxPosition
-        } catch (e: Exception) {
-            Log.e("STATIONARY OR MOVING CLASSIFIER", "An error occurred: ${e.message}")
-        }
-        return -1
-    }
 
-    private fun movingClassifier(inputFeatures: TensorBuffer) {
+    private fun taskOneClassifier(inputFeatures: TensorBuffer) {
         try {
-//            val model = MovingClassifier.newInstance(this)
-//
-//            // Runs model inference and gets result.
-//            val outputs = model.process(inputFeatures)
-//            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
-//
-//            val confidences = outputFeature0.floatArray
-//
-//            val maxPosition = getMaxPosition(confidences)
-//
-//            val classes = arrayOf(
-//                "walking",
-//                "ascending_stairs",
-//                "descending_stairs",
-//                "shuffle_walking",
-//                "running",
-//                "misc_movements"
-//            )
-//
-//            val result: TextView = findViewById(R.id.classificationText)
-//            result.setText(classes[maxPosition])
-//
-//            model.close()
+            val model = Task1.newInstance(this)
+
+            // Runs model inference and gets result.
+            val outputs = model.process(inputFeatures)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            val confidences = outputFeature0.floatArray
+
+            val maxPosition = getMaxPosition(confidences)
+
+            val classes = arrayOf(
+                "Sitting or standing",
+                "Lying down on your back",
+                "Lying down on your stomach",
+                "Lying down on your right",
+                "Lying down on your left",
+                "Walking",
+                "Ascending stairs",
+                "Descending stairs",
+                "Shuffle walking",
+                "Running",
+                "Miscellaneous"
+            )
+
+            val result: TextView = findViewById(R.id.classify_box_text)
+            result.setText(classes[maxPosition])
+
+            model.close()
 
         } catch (e: Exception) {
             Log.e("MOVING CLASSIFIER", "An error occurred: ${e.message}")
-        }
-    }
-
-    private fun stationaryPositionClassifier(inputFeatures: TensorBuffer): Int {
-        try {
-//            val model = StationaryPositionClassifier.newInstance(this)
-//
-//            // Runs model inference and gets result.
-//            val outputs = model.process(inputFeatures)
-//            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
-//
-//            val confidences = outputFeature0.floatArray
-//
-//            val maxPosition = getMaxPosition(confidences)
-//
-//            model.close()
-//
-//            return maxPosition
-
-        } catch (e: Exception) {
-            Log.e("STATIONARY POSITION CLASSIFIER", "An error occurred: ${e.message}")
-        }
-        return -1
-    }
-
-    private fun sittingOrStandingClassifier(inputFeatures: TensorBuffer) {
-        try {
-//            // Runs model inference and gets result.
-//            val model = SittingStandingModel.newInstance(this)
-//            val outputs = model.process(inputFeatures)
-//            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
-//
-//            val confidences = outputFeature0.floatArray
-//
-//            val maxPosition = getMaxPosition(confidences)
-//
-//            val classes = arrayOf(
-//                "sitting_or_standing&coughing",
-//                "sitting_or_standing&hyperventilating",
-//                "sitting_or_standing&normal_breathing",
-//                "sitting_or_standing&talking",
-//                "sitting_or_standing&eating",
-//                "sitting_or_standing&singing",
-//                "sitting_or_standing&laughing"
-//            )
-//
-//            val result: TextView = findViewById(R.id.classificationText)
-//            val displayText = classes[maxPosition]
-//            result.setText(displayText)
-//            model.close()
-        } catch (e: Exception) {
-            Log.e("LYING BACK CLASSIFIER", "An error occurred: ${e.message}")
-        }
-    }
-
-    private fun lyingBackClassifier(inputFeatures: TensorBuffer) {
-        try {
-//            // Runs model inference and gets result.
-//            val model = LyingDownBackModel.newInstance(this)
-//            val outputs = model.process(inputFeatures)
-//            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
-//
-//            val confidences = outputFeature0.floatArray
-//
-//            val maxPosition = getMaxPosition(confidences)
-//
-//            val classes = arrayOf(
-//                "coughing",
-//                "hyperventilating",
-//                "talking",
-//                "singing",
-//                "laughing",
-//                "normal_breathing"
-//            )
-//
-//            val result: TextView = findViewById(R.id.classificationText)
-//            val displayText = "lyingBack&" + classes[maxPosition]
-//            result.setText(displayText)
-//            model.close()
-        } catch (e: Exception) {
-            Log.e("LYING BACK CLASSIFIER", "An error occurred: ${e.message}")
-        }
-    }
-
-    private fun lyingStomachClassifier(inputFeatures: TensorBuffer) {
-        try {
-//            // Runs model inference and gets result.
-//            val model = LyingDownStomachModel.newInstance(this)
-//            val outputs = model.process(inputFeatures)
-//            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
-//
-//            val confidences = outputFeature0.floatArray
-//
-//            val maxPosition = getMaxPosition(confidences)
-//
-//            val classes = arrayOf(
-//                "coughing",
-//                "hyperventilating",
-//                "talking",
-//                "singing",
-//                "laughing",
-//                "normal_breathing"
-//            )
-//
-//            val result: TextView = findViewById(R.id.classificationText)
-//            val displayText = "lyingStomach&" + classes[maxPosition]
-//            result.setText(displayText)
-//
-//            model.close()
-        } catch (e: Exception) {
-            Log.e("LYING STOMACH CLASSIFIER", "An error occurred: ${e.message}")
-        }
-    }
-
-    private fun lyingRightClassifier(inputFeatures: TensorBuffer) {
-        try {
-            // Runs model inference and gets result.
-//            val model = LyingDownRightModel.newInstance(this)
-//            val outputs = model.process(inputFeatures)
-//            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
-//
-//            val confidences = outputFeature0.floatArray
-//
-//            val maxPosition = getMaxPosition(confidences)
-//
-//            val classes = arrayOf(
-//                "coughing",
-//                "hyperventilating",
-//                "talking",
-//                "singing",
-//                "laughing",
-//                "normal_breathing"
-//            )
-//
-//            val result: TextView = findViewById(R.id.classificationText)
-//            val displayText = "lyingRight&" + classes[maxPosition]
-//            result.setText(displayText)
-//
-//            model.close()
-        } catch (e: Exception) {
-            Log.e("LYING RIGHT CLASSIFIER", "An error occurred: ${e.message}")
-        }
-    }
-
-    private fun lyingLeftClassifier(inputFeatures: TensorBuffer) {
-        try {
-//            // Runs model inference and gets result.
-//            val model = LyingDownLeftModel.newInstance(this)
-//            val outputs = model.process(inputFeatures)
-//            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
-//
-//            val confidences = outputFeature0.floatArray
-//
-//            val maxPosition = getMaxPosition(confidences)
-//
-//            val classes = arrayOf(
-//                "coughing",
-//                "hyperventilating",
-//                "talking",
-//                "singing",
-//                "laughing",
-//                "normal_breathing"
-//            )
-//
-//            val result: TextView = findViewById(R.id.classificationText)
-//            val displayText = "lyingLeft&" + classes[maxPosition]
-//            result.setText(displayText)
-//
-//            model.close()
-        } catch (e: Exception) {
-            Log.e("LYING LEFT CLASSIFIER", "An error occurred: ${e.message}")
         }
     }
 
