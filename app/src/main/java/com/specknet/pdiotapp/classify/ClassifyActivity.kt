@@ -257,8 +257,8 @@ class ClassifyActivity: AppCompatActivity() {
 
     private fun prepareDataForClassification(data: ArrayList<Array<Float>>, dataWidth: Int): TensorBuffer {
         // Creates inputs for reference.
-        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 100, 3), DataType.FLOAT32)
-        val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*100*3)
+        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 125, 3), DataType.FLOAT32)
+        val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*125*3)
         byteBuffer.order(ByteOrder.nativeOrder())
         for (array in data) {
             for (value in array) {
@@ -273,8 +273,7 @@ class ClassifyActivity: AppCompatActivity() {
         try {
             if (task_one_model_button.isSelected) {
                 taskOneClassifier(inputFeatures)
-            }
-            else {
+            } else {
                 val result: TextView = findViewById(R.id.classify_box_text)
                 result.setText("No model selected")
             }
