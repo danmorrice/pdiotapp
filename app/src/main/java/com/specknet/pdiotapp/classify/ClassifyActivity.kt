@@ -56,19 +56,19 @@ class ClassifyActivity: AppCompatActivity() {
 
         setupDataStreams()
 
-        val gyroSwitch: Switch = findViewById(R.id.gyroSwitch)
-        val gyroSwitchText: TextView = findViewById(R.id.gyroSwitchText)
-
-        streamDataToModel(false)
-
-        gyroSwitch.setOnCheckedChangeListener { _, isChecked ->
-            streamDataToModel(isChecked)
-            if (isChecked) {
-                gyroSwitchText.setText("Using gyroscope readings")
-            } else {
-                gyroSwitchText.setText("Not using gyroscope readings")
-            }
-        }
+//        val gyroSwitch: Switch = findViewById(R.id.gyroSwitch)
+//        val gyroSwitchText: TextView = findViewById(R.id.gyroSwitchText)
+//
+//        streamDataToModel(false)
+//
+//        gyroSwitch.setOnCheckedChangeListener { _, isChecked ->
+//            streamDataToModel(isChecked)
+//            if (isChecked) {
+//                gyroSwitchText.setText("Using gyroscope readings")
+//            } else {
+//                gyroSwitchText.setText("Not using gyroscope readings")
+//            }
+//        }
 
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -106,7 +106,7 @@ class ClassifyActivity: AppCompatActivity() {
         handlerThreadRespeck.start()
         looperRespeck = handlerThreadRespeck.looper
         val handlerRespeck = Handler(looperRespeck)
-        this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
+//        this.registerReceiver(respeckLiveUpdateReceiver, filterTestRespeck, null, handlerRespeck)
     }
 
     private fun setupDataStreams() {
