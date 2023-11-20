@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".bluetooth.ConnectingActivity">
     <!--android:layout_height="wrap_content"
     android:layout_width="match_parent">-->
@@ -32,6 +33,7 @@
                 android:id="@+id/connect_to_respeck_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#000000"
                 android:text="Connect to your Respeck"
                 android:textSize="30dp"
                 />
@@ -41,6 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="5dp"
+                android:textColor="#000000"
                 android:textSize="15dp"
                 android:text="If your phone supports NFC, tap it against the white surface of the Respeck to obtain the ID.\nYou can also find the ID on the Respeck label, or scan the Respeck QR code by pressing the Scan QR button." />
 
@@ -49,6 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
+                android:textColor="#000000"
                 android:text="Respeck ID"
                 android:layout_marginLeft="5dp"/>
 
@@ -209,6 +213,7 @@
                 android:layout_marginLeft="0dp"
                 android:text="Sign out of your account"
                 android:textSize="30dp"
+                android:textColor="#000000"
                 app:layout_constraintBottom_toTopOf="@+id/sign_out_of_account_button"
                 app:layout_constraintEnd_toEndOf="@+id/connect_to_respeck_text"
                 app:layout_constraintStart_toStartOf="@+id/connect_to_respeck_text"
@@ -223,6 +228,7 @@
                 app:layout_constraintStart_toStartOf="@+id/sign_out_of_account_text"
                 app:layout_constraintTop_toBottomOf="@+id/sign_out_of_account_text"
                 android:layout_marginLeft="5dp"
+                android:textColor="#000000"
                 />
 
 

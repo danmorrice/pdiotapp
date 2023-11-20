@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat
 
 import com.specknet.pdiotapp.ml.Task1
 import com.specknet.pdiotapp.ml.Task2
+import com.specknet.pdiotapp.ml.Task3
 
 
 class ClassifyActivity: AppCompatActivity() {
@@ -293,6 +294,9 @@ class ClassifyActivity: AppCompatActivity() {
             } else if (task_two_model_button.isSelected) {
                 val inputFeatures: TensorBuffer = prepareDataForTaskTwoClassification(inputData, 3)
                 taskTwoClassifier(inputFeatures)
+            } else if (task_three_model_button.isSelected) {
+                val inputFeatures: TensorBuffer = prepareDataForTaskTwoClassification(inputData, 3)
+                taskThreeClassifier(inputFeatures)
             } else {
                 result.setText("No model selected")
             }
@@ -359,21 +363,21 @@ class ClassifyActivity: AppCompatActivity() {
                 "Sitting/Standing and coughing",
                 "Sitting/Standing and hyperventilating",
 
-                "Lying down on your back and breathing normally",
-                "Lying down on your back and coughing ",
-                "Lying down on your back and hyperventilating ",
-
-                "Lying down on your stomach and breathing normally",
-                "Lying down on your stomach and coughing",
-                "Lying down on your stomach and hyperventilating",
+                "Lying down on your left and breathing normally",
+                "Lying down on your left and coughing",
+                "Lying down on your left and hyperventilating",
 
                 "Lying down on your right and breathing normally",
                 "Lying down on your right and coughing",
                 "Lying down on your right and hyperventilating",
 
-                "Lying down on your left and breathing normally",
-                "Lying down on your left and coughing",
-                "Lying down on your left and hyperventilating",
+                "Lying down on your back and breathing normally",
+                "Lying down on your back and coughing",
+                "Lying down on your back and hyperventilating",
+
+                "Lying down on your stomach and breathing normally",
+                "Lying down on your stomach and coughing",
+                "Lying down on your stomach and hyperventilating",
             )
 
             result.setText(classes[maxPosition])
@@ -383,7 +387,58 @@ class ClassifyActivity: AppCompatActivity() {
             updateDatabase(classes[maxPosition])
         } catch (e: Exception) {
             Log.e("MOVING CLASSIFIER", "An error occurred: ${e.message}")
-            result.setText("ERROR ${e.message}")
+        }
+    }
+
+
+    private fun taskThreeClassifier(inputFeatures: TensorBuffer) {
+        val result: TextView = findViewById(R.id.classify_box_text)
+        try {
+            val model = Task3.newInstance(this)
+
+            // Runs model inference and gets result.
+            val outputs = model.process(inputFeatures)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            val confidences = outputFeature0.floatArray
+
+            val maxPosition = getMaxPosition(confidences)
+
+            val classes = arrayOf(
+                "Sitting/Standing and breathing normally",
+                "Sitting/Standing and coughing",
+                "Sitting/Standing and hyperventilating",
+                "Sitting/Standing and other",
+
+                "Lying down on your left and breathing normally",
+                "Lying down on your left and coughing",
+                "Lying down on your left and hyperventilating",
+                "Lying down on your left and other",
+
+                "Lying down on your right and breathing normally",
+                "Lying down on your right and coughing",
+                "Lying down on your right and hyperventilating",
+                "Lying down on your right and other",
+
+                "Lying down on your back and breathing normally",
+                "Lying down on your back and coughing",
+                "Lying down on your back and hyperventilating",
+                "Lying down on your back and other",
+
+                "Lying down on your stomach and breathing normally",
+                "Lying down on your stomach and coughing",
+                "Lying down on your stomach and hyperventilating",
+                "Lying down on your stomach and other",
+
+            )
+
+            result.setText(classes[maxPosition])
+
+            model.close()
+
+            updateDatabase(classes[maxPosition])
+        } catch (e: Exception) {
+            Log.e("MOVING CLASSIFIER", "An error occurred: ${e.message}")
         }
     }
 

@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorPrimary">#007EA7</color>
+    <color name="colorPrimaryDark">#003249</color>
+    <color name="colorAccent">#80CED7</color>
+    <color name="background">#CCDBDC</color>
 
-    <!-- Chart colors -->
-    <!--    <color name="red">#FF595E</color>-->
-    <!--    <color name="green">#8ac926</color>-->
-    <!--    <color name="blue">#1982c4</color>-->
-    <!--    <color name="yellow">#ffca3a</color>-->
-    <!--    <color name="purple">#6a4c93</color>-->
 
     <!-- Design colors -->
     <color name="indicator_unselected">#4D000000</color>
