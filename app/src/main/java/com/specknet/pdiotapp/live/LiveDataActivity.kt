@@ -59,6 +59,35 @@ class LiveDataActivity : AppCompatActivity() {
         historicalDataButton = findViewById(R.id.historical_data)
 
 
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.home_page -> {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.live_data_page -> {
+                    val intent = Intent(this, LiveDataActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.classify_page -> {
+                    val intent = Intent(this, ClassifyActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.setup_page -> {
+                    val intent = Intent(this, ConnectingActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                else -> false
+            }
+        }
 
         setupCharts()
 

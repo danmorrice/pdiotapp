@@ -82,24 +82,24 @@ public class BluetoothSpeckService extends Service {
     private Observable<RxBleConnection> respeckConnection;
 
     // everything for the Thingy
-    private RxBleConnection.RxBleConnectionState mLastThingyConnectionState;
+//    private RxBleConnection.RxBleConnectionState mLastThingyConnectionState;
 
-    private static String THINGY_UUID;
-    private static String THINGY_BLE_ADDRESS;
+//    private static String THINGY_UUID;
+//    private static String THINGY_BLE_ADDRESS;
 
-    private Subscription thingyLiveSubscription;
+//    private Subscription thingyLiveSubscription;
 
-    private boolean mIsThingyEnabled;
+//    private boolean mIsThingyEnabled;
 
-    private ThingyPacketHandler thingyHandler;
+//    private ThingyPacketHandler thingyHandler;
 
-    private RxBleDevice mThingyDevice;
+//    private RxBleDevice mThingyDevice;
 
-    private boolean mIsThingyFound;
+//    private boolean mIsThingyFound;
 
-    private String mThingyName;
+//    private String mThingyName;
 
-    private boolean mIsThingyPaused;
+//    private boolean mIsThingyPaused;
 
     private Observable<RxBleConnection> thingyConnection;
 
@@ -204,10 +204,10 @@ public class BluetoothSpeckService extends Service {
 
         // Get singleton instances of packet handler classes
         respeckHandler = new RESpeckPacketHandler(this);
-        thingyHandler = new ThingyPacketHandler(this);
+//        thingyHandler = new ThingyPacketHandler(this);
 
         mIsRESpeckPaused = false;
-        mIsThingyPaused = false;
+//        mIsThingyPaused = false;
 
         // Register broadcast receiver to receive respeck off signal
         final IntentFilter intentFilterRESpeckPaused = new IntentFilter();
@@ -263,14 +263,14 @@ public class BluetoothSpeckService extends Service {
         Log.d(TAG, "loadConfigInstanceVariables: here");
         // Get references to Utils
         mIsRESpeckEnabled = true;
-        mIsThingyEnabled = true;
+//        mIsThingyEnabled = true;
 
         // Get Bluetooth address
         RESPECK_UUID = Utils.getRESpeckUUID(this);
-        THINGY_UUID = Utils.getThingyUUID(this);
+//        THINGY_UUID = Utils.getThingyUUID(this);
 
         Log.i(TAG, "Respeck uuid found = " + RESPECK_UUID);
-        Log.i(TAG, "Thingy uuid found = " + THINGY_UUID);
+//        Log.i(TAG, "Thingy uuid found = " + THINGY_UUID);
     }
 
     /**
@@ -287,7 +287,7 @@ public class BluetoothSpeckService extends Service {
         }
 
         mIsRESpeckFound = false;
-        mIsThingyFound = false;
+//        mIsThingyFound = false;
 
         rxBleClient = RxBleClient.create(this);
 
@@ -435,73 +435,73 @@ public class BluetoothSpeckService extends Service {
         establishConnectionAndSubscribe.accept(RxBleConnection.RxBleConnectionState.DISCONNECTED);
     }
 
-    private void connectToThingy() {
-        Log.d(TAG, "connectToThingy: here");
-        mThingyDevice = rxBleClient.getBleDevice(THINGY_BLE_ADDRESS);
-        mThingyName = mThingyDevice.getName();
-
-        Log.d(TAG, "connectToThingy: mThingyDevice = " + mThingyDevice.toString());
-        Log.d(TAG, "connectToThingy: mThingyName = " + mThingyName);
-
-        // re-usable connect callback
-        Consumer<RxBleConnection.RxBleConnectionState> establishConnectionAndSubscribe = (connectionState) -> {
-            thingyConnection = establishThingyConnection();
-
-            Log.d(TAG, "connectToThingy: set thingy handler");
-
-            // TODO set thingy characteristic here
-
-            final String thingy_characteristic;
-            thingy_characteristic = Constants.THINGY_MOTION_CHARACTERISTIC;
-
-            Log.i(TAG, String.format("Connecting to Thingy with characteristic `%s`", thingy_characteristic));
-
-            setupThingySubscription(
-                    thingyConnection
-            );
-
-            // update the connection state coming from the connection observer
-            mLastThingyConnectionState = connectionState;
-        };
-
-        mThingyDevice.observeConnectionStateChanges().subscribe(connectionState -> {
-            if (connectionState == RxBleConnection.RxBleConnectionState.DISCONNECTED && mIsServiceRunning) {
-                Log.d(TAG, "Thingy disconnected");
-                Intent thingyDisconnectedIntent = new Intent(Constants.ACTION_THINGY_DISCONNECTED);
-                sendBroadcast(thingyDisconnectedIntent);
-
-                if (mLastThingyConnectionState == RxBleConnection.RxBleConnectionState.CONNECTED) {
-                    // If we were just disconnected, try to immediately connect again.
-                    Log.i(TAG, "Thingy connection lost, trying to reconnect");
-                    new Timer().schedule(new TimerTask() {
-                        @RequiresApi(api = Build.VERSION_CODES.N)
-                        @Override
-                        public void run() {
-                            // last connection state was OK - only re-establish the connection
-                            establishConnectionAndSubscribe.accept(connectionState);
-                        }
-                    }, 10000);
-                } else if (mLastThingyConnectionState == RxBleConnection.RxBleConnectionState.CONNECTING) {
-                    // This means we tried to reconnect, but there was a timeout. In this case we
-                    // wait for x seconds before reconnecting
-                    Log.i(TAG, String.format("Thingy connection timeout, waiting %d seconds before reconnect",
-                            Constants.RECONNECTION_TIMEOUT_MILLIS / 1000));
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            Log.i(TAG, "Thingy reconnecting...");
-                            establishConnectionAndSubscribe.accept(connectionState);
-                        }
-                    }, Constants.RECONNECTION_TIMEOUT_MILLIS);
-                }
-            }
-        }, throwable -> {
-            Log.e(TAG, "Error occured while listening to RESpeck connection state changes: " + throwable.getMessage());
-        });
-
-        // first time establishing the connection, so the last state was "disconnected"
-        establishConnectionAndSubscribe.accept(RxBleConnection.RxBleConnectionState.DISCONNECTED);
-    }
+//    private void connectToThingy() {
+//        Log.d(TAG, "connectToThingy: here");
+//        mThingyDevice = rxBleClient.getBleDevice(THINGY_BLE_ADDRESS);
+//        mThingyName = mThingyDevice.getName();
+//
+//        Log.d(TAG, "connectToThingy: mThingyDevice = " + mThingyDevice.toString());
+//        Log.d(TAG, "connectToThingy: mThingyName = " + mThingyName);
+//
+//        // re-usable connect callback
+//        Consumer<RxBleConnection.RxBleConnectionState> establishConnectionAndSubscribe = (connectionState) -> {
+//            thingyConnection = establishThingyConnection();
+//
+//            Log.d(TAG, "connectToThingy: set thingy handler");
+//
+//            // TODO set thingy characteristic here
+//
+//            final String thingy_characteristic;
+//            thingy_characteristic = Constants.THINGY_MOTION_CHARACTERISTIC;
+//
+//            Log.i(TAG, String.format("Connecting to Thingy with characteristic `%s`", thingy_characteristic));
+//
+//            setupThingySubscription(
+//                    thingyConnection
+//            );
+//
+//            // update the connection state coming from the connection observer
+//            mLastThingyConnectionState = connectionState;
+//        };
+//
+//        mThingyDevice.observeConnectionStateChanges().subscribe(connectionState -> {
+//            if (connectionState == RxBleConnection.RxBleConnectionState.DISCONNECTED && mIsServiceRunning) {
+//                Log.d(TAG, "Thingy disconnected");
+//                Intent thingyDisconnectedIntent = new Intent(Constants.ACTION_THINGY_DISCONNECTED);
+//                sendBroadcast(thingyDisconnectedIntent);
+//
+//                if (mLastThingyConnectionState == RxBleConnection.RxBleConnectionState.CONNECTED) {
+//                    // If we were just disconnected, try to immediately connect again.
+//                    Log.i(TAG, "Thingy connection lost, trying to reconnect");
+//                    new Timer().schedule(new TimerTask() {
+//                        @RequiresApi(api = Build.VERSION_CODES.N)
+//                        @Override
+//                        public void run() {
+//                            // last connection state was OK - only re-establish the connection
+//                            establishConnectionAndSubscribe.accept(connectionState);
+//                        }
+//                    }, 10000);
+//                } else if (mLastThingyConnectionState == RxBleConnection.RxBleConnectionState.CONNECTING) {
+//                    // This means we tried to reconnect, but there was a timeout. In this case we
+//                    // wait for x seconds before reconnecting
+//                    Log.i(TAG, String.format("Thingy connection timeout, waiting %d seconds before reconnect",
+//                            Constants.RECONNECTION_TIMEOUT_MILLIS / 1000));
+//                    new Timer().schedule(new TimerTask() {
+//                        @Override
+//                        public void run() {
+//                            Log.i(TAG, "Thingy reconnecting...");
+//                            establishConnectionAndSubscribe.accept(connectionState);
+//                        }
+//                    }, Constants.RECONNECTION_TIMEOUT_MILLIS);
+//                }
+//            }
+//        }, throwable -> {
+//            Log.e(TAG, "Error occured while listening to RESpeck connection state changes: " + throwable.getMessage());
+//        });
+//
+//        // first time establishing the connection, so the last state was "disconnected"
+//        establishConnectionAndSubscribe.accept(RxBleConnection.RxBleConnectionState.DISCONNECTED);
+//    }
 
 
 
@@ -596,71 +596,71 @@ public class BluetoothSpeckService extends Service {
 
     }
 
-    private void setupThingySubscription(Observable<RxBleConnection> conn) {
-        String characteristic =
-                Constants.THINGY_MOTION_CHARACTERISTIC;
-
-        Log.i(TAG, String.format("Setting up subscription, characteristic: %s", characteristic));
-
-        Consumer<byte[]> cvHandler = (byte[] cv) -> thingyHandler.processThingyPacket(cv);
-
-        // https://polidea.github.io/RxAndroidBle/#change-notifications
-        Runnable subscribe = () -> thingyLiveSubscription = conn
-                .flatMap(rxBleConnection -> rxBleConnection.setupNotification(UUID.fromString(characteristic)))
-                .doOnNext(notificationObservable -> {
-                    // Notification has been set up
-                    Log.i(TAG, "Subscribed to Thingy");
-                    Intent thingyFoundIntent = new Intent(Constants.ACTION_THINGY_CONNECTED);
-                    thingyFoundIntent.putExtra(Constants.Config.THINGY_UUID, THINGY_UUID);
-                    sendBroadcast(thingyFoundIntent);
-
-                })
-                .flatMap(notificationObservable -> notificationObservable)
-                .subscribe(
-                        bytes -> {
-                            if (mIsThingyPaused) {
-                                Log.i(TAG, "Thingy packet ignored as paused mode on");
-                            } else {
-                                // Call requires API level 24 (current min is 22): java.util.function.Consumer#accept
-                                cvHandler.accept(bytes);
-                            }
-                        }, throwable -> {
-                            // An error with autoConnect means that we are disconnected
-                            String stackTrace = Utils.getStackTraceAsString(throwable);
-                            Log.e(TAG, "Thingy disconnected: " + stackTrace);
-
-                            Intent thingyDisconnectedIntent = new Intent(Constants.ACTION_THINGY_DISCONNECTED);
-                            sendBroadcast(thingyDisconnectedIntent);
-                        });
-
-        Log.i(TAG, String.format("Unsubscribing from subscription: %s", thingyLiveSubscription));
-        long connectDelay;
-        try {
-            thingyLiveSubscription.unsubscribe();
-            Log.i(TAG, "Unsubscribed from thingy! Pausing...");
-            // if this is an unsubscribe, allow for enough time to change characteristic
-            connectDelay = Constants.RESPECK_CHARACTERISTIC_CHANGE_TIMEOUT_MS;
-        } catch (Exception e) {
-            Log.w(TAG, String.format("Unsubscribe error: %s", e.getMessage()));
-            // if the unsubscribe failed, there likely was no subscription,
-            // so the connection can happen right away (short delay may be useful)
-            connectDelay = 1000;
-        }
-        /*
-         grace period for re-connecting
-         TODO: Re-visit with new BLE library.
-          - If no time delay is set, the characteristic will still successfully change,
-            but there is a bug switching back from the IMU characteristic to the regular one.
-          - It feels like the IMU characteristic is still subscribed to after switching,
-            stopping the RESpeck from transmitting on the regular characteristic (which is
-            intended behaviour in the RESpeck firmware).
-          - With this delay, the RESpeck connection is re-established, which is confirmed by
-            its LED flashing red (disconnect), then blue (connect).
-        */
-        (new Handler()).postDelayed(subscribe, connectDelay);
-//        subscribe.run();
-
-    }
+//    private void setupThingySubscription(Observable<RxBleConnection> conn) {
+//        String characteristic =
+//                Constants.THINGY_MOTION_CHARACTERISTIC;
+//
+//        Log.i(TAG, String.format("Setting up subscription, characteristic: %s", characteristic));
+//
+//        Consumer<byte[]> cvHandler = (byte[] cv) -> thingyHandler.processThingyPacket(cv);
+//
+//        // https://polidea.github.io/RxAndroidBle/#change-notifications
+//        Runnable subscribe = () -> thingyLiveSubscription = conn
+//                .flatMap(rxBleConnection -> rxBleConnection.setupNotification(UUID.fromString(characteristic)))
+//                .doOnNext(notificationObservable -> {
+//                    // Notification has been set up
+//                    Log.i(TAG, "Subscribed to Thingy");
+//                    Intent thingyFoundIntent = new Intent(Constants.ACTION_THINGY_CONNECTED);
+//                    thingyFoundIntent.putExtra(Constants.Config.THINGY_UUID, THINGY_UUID);
+//                    sendBroadcast(thingyFoundIntent);
+//
+//                })
+//                .flatMap(notificationObservable -> notificationObservable)
+//                .subscribe(
+//                        bytes -> {
+//                            if (mIsThingyPaused) {
+//                                Log.i(TAG, "Thingy packet ignored as paused mode on");
+//                            } else {
+//                                // Call requires API level 24 (current min is 22): java.util.function.Consumer#accept
+//                                cvHandler.accept(bytes);
+//                            }
+//                        }, throwable -> {
+//                            // An error with autoConnect means that we are disconnected
+//                            String stackTrace = Utils.getStackTraceAsString(throwable);
+//                            Log.e(TAG, "Thingy disconnected: " + stackTrace);
+//
+//                            Intent thingyDisconnectedIntent = new Intent(Constants.ACTION_THINGY_DISCONNECTED);
+//                            sendBroadcast(thingyDisconnectedIntent);
+//                        });
+//
+//        Log.i(TAG, String.format("Unsubscribing from subscription: %s", thingyLiveSubscription));
+//        long connectDelay;
+//        try {
+//            thingyLiveSubscription.unsubscribe();
+//            Log.i(TAG, "Unsubscribed from thingy! Pausing...");
+//            // if this is an unsubscribe, allow for enough time to change characteristic
+//            connectDelay = Constants.RESPECK_CHARACTERISTIC_CHANGE_TIMEOUT_MS;
+//        } catch (Exception e) {
+//            Log.w(TAG, String.format("Unsubscribe error: %s", e.getMessage()));
+//            // if the unsubscribe failed, there likely was no subscription,
+//            // so the connection can happen right away (short delay may be useful)
+//            connectDelay = 1000;
+//        }
+//        /*
+//         grace period for re-connecting
+//         TODO: Re-visit with new BLE library.
+//          - If no time delay is set, the characteristic will still successfully change,
+//            but there is a bug switching back from the IMU characteristic to the regular one.
+//          - It feels like the IMU characteristic is still subscribed to after switching,
+//            stopping the RESpeck from transmitting on the regular characteristic (which is
+//            intended behaviour in the RESpeck firmware).
+//          - With this delay, the RESpeck connection is re-established, which is confirmed by
+//            its LED flashing red (disconnect), then blue (connect).
+//        */
+//        (new Handler()).postDelayed(subscribe, connectDelay);
+////        subscribe.run();
+//
+//    }
 
     private Observable<RxBleConnection> establishRESpeckConnection() {
         Log.d(TAG, "establishRESpeckConnection: here");
@@ -669,12 +669,12 @@ public class BluetoothSpeckService extends Service {
         return mRESpeckDevice.establishConnection(false);
     }
 
-    private Observable<RxBleConnection> establishThingyConnection() {
-        Log.d(TAG, "establishThingyConnection: here");
-        Log.i(TAG, "Connecting to Thingy...");
-
-        return mThingyDevice.establishConnection(false);
-    }
+//    private Observable<RxBleConnection> establishThingyConnection() {
+//        Log.d(TAG, "establishThingyConnection: here");
+//        Log.i(TAG, "Connecting to Thingy...");
+//
+//        return mThingyDevice.establishConnection(false);
+//    }
 
     // TODO this could be an enum?
     public String getRESpeckFwVersion() {
@@ -708,10 +708,10 @@ public class BluetoothSpeckService extends Service {
             respeckLiveSubscription.unsubscribe();
         }
 
-        if (thingyLiveSubscription != null) {
-            Log.i(TAG, "stopSpeckService: unsubscribed thingysub");
-            thingyLiveSubscription.unsubscribe();
-        }
+//        if (thingyLiveSubscription != null) {
+//            Log.i(TAG, "stopSpeckService: unsubscribed thingysub");
+//            thingyLiveSubscription.unsubscribe();
+//        }
 
         // Close the handlers
         try {
