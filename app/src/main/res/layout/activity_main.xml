@@ -29,62 +29,6 @@
         />
 
 
-
-<!--        <TextView-->
-<!--            android:id="@+id/how_to_use_app"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="About our app:"-->
-<!--            android:textSize="20dp"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/welcome_message"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/welcome_message"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:layout_marginLeft="15dp"/>-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/step1_text"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="1. Connect to the Respeck in Settings"-->
-<!--            android:textSize="15dp"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/how_to_use_app"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/how_to_use_app"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:layout_marginLeft="25dp"/>-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/step2_text"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="2. View your live data readings measured by the Respeck and your previously classified data in the Data tab"-->
-<!--            android:textSize="15dp"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/step1_text"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/step1_text"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:layout_marginLeft="25dp"/>-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/step3_text"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="3. You can classify your current activity in the Classify tab using one of four models"-->
-<!--            android:textSize="15dp"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/step2_text"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/step2_text"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:layout_marginLeft="25dp"/>-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/step4_text"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="4. Each Classification is made based on 3s of data"-->
-<!--            android:textSize="15dp"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/step3_text"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/step3_text"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:layout_marginLeft="25dp"/>-->
-
         <LinearLayout
             android:layout_width="390dp"
             android:layout_height="150dp"
@@ -94,20 +38,21 @@
             android:layout_gravity="center"
             app:layout_constraintTop_toBottomOf="@+id/welcome_message"
             app:layout_constraintStart_toStartOf="@+id/parent"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            >
 
             <TextView
                 android:id="@+id/title_of_recent_classify_box"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Your Most Recent Classification Was:"
-                android:textSize="20dp"
-                app:layout_constraintStart_toStartOf="@+id/your_activity_text"
                 android:layout_gravity="left"
-                android:layout_marginTop="5dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"
-                />
+                android:text="Your most recent classification was:"
+                android:textSize="20dp"
+
+                app:layout_constraintStart_toStartOf="@+id/your_activity_text" />
 
             <LinearLayout
                 android:layout_width="300dp"
@@ -120,17 +65,16 @@
                 app:layout_constraintTop_toBottomOf="@+id/title_of_recent_classify_box">
 
                 <TextView
+                    android:id="@+id/recent_classify_box_text"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/recent_classify_box_text"
-                    android:text="You have no saved Classifications"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="You have no saved classifications"
                     android:textColor="@android:color/white"
                     android:textSize="15dp"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    app:layout_constraintTop_toBottomOf="@+id/title_of_recent_classify_box"
                     app:layout_constraintStart_toStartOf="@+id/title_of_recent_classify_box"
-                    />
+                    app:layout_constraintTop_toBottomOf="@+id/title_of_recent_classify_box" />
 
             </LinearLayout>
 
@@ -166,7 +110,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/your_activity_text"
-                android:text="Your Activity Over the Past Week:"
+                android:text="Your activity over the past week:"
                 android:textSize="20dp"
                 android:layout_gravity="start|top"
                 android:layout_marginStart="27dp"

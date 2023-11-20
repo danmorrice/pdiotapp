@@ -28,9 +28,9 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.text.SimpleDateFormat
-import java.util.Date
 
 import com.specknet.pdiotapp.ml.Task1
+import com.specknet.pdiotapp.ml.Task2
 
 
 class ClassifyActivity: AppCompatActivity() {
@@ -230,8 +230,8 @@ class ClassifyActivity: AppCompatActivity() {
 
         if (nonGyroDataPointCounter == 25) {
             nonGyroDataPointCounter = 0
-            inputFeatures = prepareDataForClassification(dataStream, 3)
-            classifyNonGyroActivity(inputFeatures)
+            inputFeatures = prepareDataForTaskOneClassification(dataStream, 3)
+            classifyNonGyroActivity(dataStream)
         }
 
 
@@ -253,7 +253,7 @@ class ClassifyActivity: AppCompatActivity() {
 //        }
     }
 
-    private fun prepareDataForClassification(data: ArrayList<Array<Float>>, dataWidth: Int): TensorBuffer {
+    private fun prepareDataForTaskOneClassification(data: ArrayList<Array<Float>>, dataWidth: Int): TensorBuffer {
         // Creates inputs for reference.
         val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 125, 3), DataType.FLOAT32)
         val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*125*3)
@@ -267,12 +267,33 @@ class ClassifyActivity: AppCompatActivity() {
         return inputFeature0
     }
 
-    private fun classifyNonGyroActivity(inputFeatures: TensorBuffer) {
+
+    private fun prepareDataForTaskTwoClassification(rawData: ArrayList<Array<Float>>, dataWidth: Int): TensorBuffer {
+        val inputData = FeatureExtraction.extract_features(rawData)
+
+        // Creates inputs for reference.
+        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 125, 9), DataType.FLOAT32)
+        val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4*125*9)
+        byteBuffer.order(ByteOrder.nativeOrder())
+        for (array in inputData) {
+            for (value in array) {
+                byteBuffer.putFloat(value)
+            }
+        }
+        inputFeature0.loadBuffer(byteBuffer)
+        return inputFeature0
+    }
+
+    private fun classifyNonGyroActivity(inputData: ArrayList<Array<Float>>) {
         try {
+            val result: TextView = findViewById(R.id.classify_box_text)
             if (task_one_model_button.isSelected) {
+                val inputFeatures: TensorBuffer = prepareDataForTaskOneClassification(inputData, 3)
                 taskOneClassifier(inputFeatures)
+            } else if (task_two_model_button.isSelected) {
+                val inputFeatures: TensorBuffer = prepareDataForTaskTwoClassification(inputData, 3)
+                taskTwoClassifier(inputFeatures)
             } else {
-                val result: TextView = findViewById(R.id.classify_box_text)
                 result.setText("No model selected")
             }
 
@@ -295,7 +316,7 @@ class ClassifyActivity: AppCompatActivity() {
             val maxPosition = getMaxPosition(confidences)
 
             val classes = arrayOf(
-                "Sitting or standing",
+                "Sitting/Standing",
                 "Lying down on your back",
                 "Lying down on your stomach",
                 "Lying down on your right",
@@ -316,6 +337,53 @@ class ClassifyActivity: AppCompatActivity() {
             updateDatabase(classes[maxPosition])
         } catch (e: Exception) {
             Log.e("MOVING CLASSIFIER", "An error occurred: ${e.message}")
+        }
+    }
+
+
+    private fun taskTwoClassifier(inputFeatures: TensorBuffer) {
+        val result: TextView = findViewById(R.id.classify_box_text)
+        try {
+            val model = Task2.newInstance(this)
+
+            // Runs model inference and gets result.
+            val outputs = model.process(inputFeatures)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            val confidences = outputFeature0.floatArray
+
+            val maxPosition = getMaxPosition(confidences)
+
+            val classes = arrayOf(
+                "Sitting/Standing and breathing normally",
+                "Sitting/Standing and coughing",
+                "Sitting/Standing and hyperventilating",
+
+                "Lying down on your back and breathing normally",
+                "Lying down on your back and coughing ",
+                "Lying down on your back and hyperventilating ",
+
+                "Lying down on your stomach and breathing normally",
+                "Lying down on your stomach and coughing",
+                "Lying down on your stomach and hyperventilating",
+
+                "Lying down on your right and breathing normally",
+                "Lying down on your right and coughing",
+                "Lying down on your right and hyperventilating",
+
+                "Lying down on your left and breathing normally",
+                "Lying down on your left and coughing",
+                "Lying down on your left and hyperventilating",
+            )
+
+            result.setText(classes[maxPosition])
+
+            model.close()
+
+            updateDatabase(classes[maxPosition])
+        } catch (e: Exception) {
+            Log.e("MOVING CLASSIFIER", "An error occurred: ${e.message}")
+            result.setText("ERROR ${e.message}")
         }
     }
 
@@ -348,7 +416,7 @@ class ClassifyActivity: AppCompatActivity() {
 
         val currentDateAndTime = formattedTimeAndDate.format(currentTime)
         val currentDateOnly = extractedDateFormatter.format(currentTime)
-        database.child(user).child(currentDateOnly).child(currentDateAndTime).setValue(currentDateAndTime + " : " + classificationText)
+        database.child(user).child(currentDateOnly).child(currentDateAndTime).setValue("$currentDateAndTime : $classificationText")
     }
 
 
