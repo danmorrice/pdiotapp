@@ -63,35 +63,6 @@ class ConnectingActivity : AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigator)
         bottomNavigationView.selectedItemId = R.id.setup_page
 
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.home_page -> {
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.live_data_page -> {
-                    val intent = Intent(this, LiveDataActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.classify_page -> {
-                    val intent = Intent(this, ClassifyActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.setup_page -> {
-                    val intent = Intent(this, ConnectingActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                else -> false
-            }
-        }
 
         // scan respeck
         scanRespeckButton = findViewById(R.id.scan_respeck)
@@ -130,6 +101,36 @@ class ConnectingActivity : AppCompatActivity() {
             startSpeckService()
         }
 
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.home_page -> {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.live_data_page -> {
+                    val intent = Intent(this, LiveDataActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.classify_page -> {
+                    val intent = Intent(this, ClassifyActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.setup_page -> {
+                    //val intent = Intent(this, ConnectingActivity::class.java)
+                    //startActivity(intent)
+                    true
+                }
+
+                else -> false
+            }
+        }
+
         //Sign User out of Firebase account
         signOutOfAccountButton.setOnClickListener {
             val firebaseAuth = FirebaseAuth.getInstance()
@@ -138,7 +139,6 @@ class ConnectingActivity : AppCompatActivity() {
                 firebaseAuth.signOut()
                 Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, SignInActivity::class.java)
-                startActivity(intent)
             } else {
                 Toast.makeText(this, "Not signed in", Toast.LENGTH_SHORT).show()
             }

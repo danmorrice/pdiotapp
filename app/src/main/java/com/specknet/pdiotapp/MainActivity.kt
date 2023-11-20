@@ -70,6 +70,23 @@ class MainActivity : AppCompatActivity() {
         //bottomNavigationView.menu.findItem(R.id.home_page).isChecked = true
 
 
+        liveProcessingButton = findViewById(R.id.live_button)
+        pairingButton = findViewById(R.id.ble_button)
+        classifyButton = findViewById(R.id.classify_button)
+//        recordButton = findViewById(R.id.record_button)
+
+        permissionAlertDialog = AlertDialog.Builder(this)
+
+        setupClickListeners()
+
+        setupPermissions()
+
+        setupBluetoothService()
+
+        // register a broadcast receiver for respeck status
+        filter.addAction(Constants.ACTION_RESPECK_CONNECTED)
+        filter.addAction(Constants.ACTION_RESPECK_DISCONNECTED)
+
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.home_page -> {
@@ -99,23 +116,6 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-
-        liveProcessingButton = findViewById(R.id.live_button)
-        pairingButton = findViewById(R.id.ble_button)
-        classifyButton = findViewById(R.id.classify_button)
-//        recordButton = findViewById(R.id.record_button)
-
-        permissionAlertDialog = AlertDialog.Builder(this)
-
-        setupClickListeners()
-
-        setupPermissions()
-
-        setupBluetoothService()
-
-        // register a broadcast receiver for respeck status
-        filter.addAction(Constants.ACTION_RESPECK_CONNECTED)
-        filter.addAction(Constants.ACTION_RESPECK_DISCONNECTED)
 
     }
 

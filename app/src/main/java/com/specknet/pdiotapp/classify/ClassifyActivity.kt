@@ -10,7 +10,6 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
-import android.widget.Switch
 import android.widget.TextView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.specknet.pdiotapp.MainActivity

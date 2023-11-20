@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,6 +8,8 @@
     tools:context=".bluetooth.ConnectingActivity">
     <!--android:layout_height="wrap_content"
     android:layout_width="match_parent">-->
+
+
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -96,19 +99,19 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Thingy"
-                android:textSize="20dp" />
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Thingy"-->
+<!--                android:textSize="20dp" />-->
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:textSize="10dp"
-                android:text="If your phone supports NFC, tap it against the top of the Thingy to obtain the ID.\nThe Thingy ID is also written on a label under the black rubber case." />
+<!--            <TextView-->
+<!--                android:id="@+id/textView4"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="5dp"-->
+<!--                android:textSize="10dp"-->
+<!--                android:text="If your phone supports NFC, tap it against the top of the Thingy to obtain the ID.\nThe Thingy ID is also written on a label under the black rubber case." />-->
 
 
             <TextView
@@ -135,11 +138,11 @@
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="30dp"
-            android:text="Try to always connect both sensors." />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:paddingLeft="30dp"-->
+<!--            android:text="Try to always connect both sensors." />-->
 
         <LinearLayout
             android:layout_width="match_parent"
