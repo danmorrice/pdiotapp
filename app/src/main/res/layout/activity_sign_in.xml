@@ -8,6 +8,7 @@
     tools:context=".SignInActivity">
 
     <TextView
+        android:id="@+id/sign_up_welcome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
@@ -22,14 +23,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
         android:layout_marginHorizontal="16dp"
-        android:textColor="@color/colorPrimary"
-        android:textSize="30sp"
+        android:layout_marginTop="60dp"
         android:gravity="left"
         android:text="Sign In"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        android:textColor="@color/colorPrimary"
+        android:textSize="30sp"
+        app:layout_constraintTop_toTopOf="@+id/sign_up_welcome"
+        tools:layout_editor_absoluteX="0dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/emailLayout"
@@ -79,7 +80,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/rounded_button"
         android:text="Sign In"
         android:textColor="@android:color/white"
         android:textStyle="bold"

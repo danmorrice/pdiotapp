@@ -229,7 +229,7 @@
         android:layout_height="55dp"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:background="@android:color/white"
+        android:background="@color/colorPrimaryDark"
         app:labelVisibilityMode="labeled"
         app:itemTextColor="@drawable/selector"
         app:itemIconTint="@drawable/selector"

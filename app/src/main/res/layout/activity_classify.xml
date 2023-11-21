@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:text="Classify Activity"
         android:textSize="30dp"
+        android:textColor="#000000"
         android:layout_marginTop="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.08"
@@ -24,11 +25,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/classify_description_text"
+        android:textColor="#000000"
+        android:textSize="15dp"
         android:text="Please select the model you would like to classify with:"
         app:layout_constraintTop_toBottomOf="@+id/classify_header"
         app:layout_constraintStart_toStartOf="@+id/classify_header"
         android:layout_marginStart="10dp"
-        android:textSize="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"/>
 
@@ -108,7 +110,7 @@
         android:id="@+id/linear_layout_of_large_classification_box"
         app:layout_constraintTop_toBottomOf="@+id/task_4_model_button"
         app:layout_constraintStart_toStartOf="@+id/task_1_model_button"
-        android:layout_marginTop="50dp">
+        android:layout_marginTop="60dp">
 
         <TextView
             android:id="@+id/title_of_classify_box"
