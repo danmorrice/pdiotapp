@@ -135,7 +135,7 @@
             app:layout_constraintTop_toBottomOf="@+id/title_of_classify_box">
 
         <TextView
-            android:layout_width="300dp"
+            android:layout_width="340dp"
             android:layout_height="wrap_content"
             android:id="@+id/classify_box_text"
             android:text="No classification yet"
