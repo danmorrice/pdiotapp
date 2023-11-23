@@ -206,8 +206,8 @@ class MainActivity : AppCompatActivity() {
             builder.setTitle("About Our App")
             builder.setMessage(
                 "1. Connect to the Respeck in Settings \n" +
-                        "2. View your live data readings measured by the Respeck and your previously classified data in the Data tab \n" +
-                        "3. You can classify your current activity in the Classify tab using one of our models \n" +
+                        "2. View your live data readings measured by the Respeck and your previously classified data in the Data screen \n" +
+                        "3. You can classify your current activity in the Classify screen using one of our models \n" +
                         "4. Each Classification is made based on an initial 5s of data and then 1s intervals after that \n"
             )
             builder.setPositiveButton("OK") { dialog, which ->
