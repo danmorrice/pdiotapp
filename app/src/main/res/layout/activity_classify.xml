@@ -76,20 +76,20 @@
         android:layout_marginTop="10dp"
         />
 
-    <Button
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/task_4_model_button"
-        android:text="Addition of Gyroscope Data in Classification"
-        android:textSize="15sp"
-        app:layout_constraintTop_toBottomOf="@+id/task_3_model_button"
-        app:layout_constraintStart_toStartOf="@+id/classify_description_text"
-        android:layout_marginStart="15dp"
-        android:background="@drawable/classify_button_selector"
-        android:textColor="@drawable/classify_text_selector"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
-        />
+<!--    <Button-->
+<!--        android:layout_width="350dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/task_4_model_button"-->
+<!--        android:text="Addition of Gyroscope Data in Classification"-->
+<!--        android:textSize="15sp"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/task_3_model_button"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/classify_description_text"-->
+<!--        android:layout_marginStart="15dp"-->
+<!--        android:background="@drawable/classify_button_selector"-->
+<!--        android:textColor="@drawable/classify_text_selector"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:layout_marginBottom="20dp"-->
+<!--        />-->
 
 
 <!--    <TextView-->
@@ -103,14 +103,15 @@
 <!--        app:layout_constraintTop_toBottomOf="@+id/button" />-->
 
     <LinearLayout
-        android:layout_width="350dp"
-        android:layout_height="110dp"
+        android:layout_width="370dp"
+        android:layout_height="150dp"
         android:background="@drawable/rounded_button"
         android:orientation="vertical"
         android:id="@+id/linear_layout_of_large_classification_box"
-        app:layout_constraintTop_toBottomOf="@+id/task_4_model_button"
-        app:layout_constraintStart_toStartOf="@+id/task_1_model_button"
-        android:layout_marginTop="60dp">
+        app:layout_constraintTop_toBottomOf="@+id/task_3_model_button"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="21dp">
 
         <TextView
             android:id="@+id/title_of_classify_box"
@@ -125,8 +126,8 @@
             />
 
         <LinearLayout
-            android:layout_width="300dp"
-            android:layout_height="50dp"
+            android:layout_width="370dp"
+            android:layout_height="100dp"
             android:background="@drawable/rounded_with_white_border"
             android:orientation="vertical"
             android:id="@+id/inner_linear_layout"
@@ -135,12 +136,12 @@
             app:layout_constraintTop_toBottomOf="@+id/title_of_classify_box">
 
         <TextView
-            android:layout_width="340dp"
-            android:layout_height="wrap_content"
+            android:layout_width="369dp"
+            android:layout_height="80dp"
             android:id="@+id/classify_box_text"
             android:text="No classification yet"
             android:textColor="@android:color/white"
-            android:textSize="15dp"
+            android:textSize="20dp"
             android:gravity="center"
             android:layout_gravity="center"
             app:layout_constraintTop_toBottomOf="@+id/title_of_classify_box"

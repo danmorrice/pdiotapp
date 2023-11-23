@@ -54,7 +54,7 @@ class ClassifyActivity: AppCompatActivity() {
     private lateinit var task_one_model_button : Button
     private lateinit var task_two_model_button : Button
     private lateinit var task_three_model_button : Button
-    private lateinit var task_four_model_button : Button
+//    private lateinit var task_four_model_button : Button
 
 
 
@@ -69,7 +69,7 @@ class ClassifyActivity: AppCompatActivity() {
         task_one_model_button = findViewById(R.id.task_1_model_button)
         task_two_model_button = findViewById(R.id.task_2_model_button)
         task_three_model_button = findViewById(R.id.task_3_model_button)
-        task_four_model_button = findViewById(R.id.task_4_model_button)
+//        task_four_model_button = findViewById(R.id.task_4_model_button)
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -106,7 +106,7 @@ class ClassifyActivity: AppCompatActivity() {
                 task_one_model_button.isSelected = true
                 task_two_model_button.isSelected = false
                 task_three_model_button.isSelected = false
-                task_four_model_button.isSelected = false
+//                task_four_model_button.isSelected = false
                 Toast.makeText(this, "Task 1 Model Selected", Toast.LENGTH_SHORT).show()
             }
         }
@@ -116,7 +116,7 @@ class ClassifyActivity: AppCompatActivity() {
                 task_one_model_button.isSelected = false
                 task_two_model_button.isSelected = true
                 task_three_model_button.isSelected = false
-                task_four_model_button.isSelected = false
+//                task_four_model_button.isSelected = false
                 Toast.makeText(this, "Task 2 Model Selected", Toast.LENGTH_SHORT).show()
             }
         }
@@ -126,20 +126,20 @@ class ClassifyActivity: AppCompatActivity() {
                 task_one_model_button.isSelected = false
                 task_two_model_button.isSelected = false
                 task_three_model_button.isSelected = true
-                task_four_model_button.isSelected = false
+//                task_four_model_button.isSelected = false
                 Toast.makeText(this, "Task 3 Model Selected", Toast.LENGTH_SHORT).show()
             }
         }
 
-        task_four_model_button.setOnClickListener {
-            if (!task_four_model_button.isSelected) {
-                task_one_model_button.isSelected = false
-                task_two_model_button.isSelected = false
-                task_three_model_button.isSelected = false
-                task_four_model_button.isSelected = true
-                Toast.makeText(this, "Task 4 Model Selected", Toast.LENGTH_SHORT).show()
-            }
-        }
+//        task_four_model_button.setOnClickListener {
+//            if (!task_four_model_button.isSelected) {
+//                task_one_model_button.isSelected = false
+//                task_two_model_button.isSelected = false
+//                task_three_model_button.isSelected = false
+//                task_four_model_button.isSelected = true
+//                Toast.makeText(this, "Task 4 Model Selected", Toast.LENGTH_SHORT).show()
+//            }
+//        }
 
         //Get the database instance
         database = FirebaseDatabase.getInstance("https://pdiotapp-5c2f8-default-rtdb.europe-west1.firebasedatabase.app/")
